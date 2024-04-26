@@ -36,24 +36,32 @@ const GoogleMapsScreen = () => {
 
   const saveAddress = async () => {
     try {
-        // Assuming markers is an array of coordinate objects
-        const response = await fetch('/coordinates', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(markers)
+      if (markers.length > 0) {
+        const response = await fetch('http://localhost:3000/api/coordinates', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(markers.map(marker => ({
+            latitude: marker.coordinate.latitude,
+            longitude: marker.coordinate.longitude,
+            order: markers.indexOf(marker) + 1 // Add 1 to index to start order from 1
+          })))
         });
-
+  
         if (!response.ok) {
-            throw new Error('Failed to save coordinates');
+          throw new Error('Failed to save coordinates');
         }
-
+  
         console.log('Coordinates saved successfully');
+      } else {
+        console.log("No markers to save.");
+      }
     } catch (error) {
-        console.error('Error saving coordinates:', error.message);
+      console.error('Error saving coordinates:', error.message);
     }
-};
+  };
+  
 
   
   
