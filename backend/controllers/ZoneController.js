@@ -1,53 +1,14 @@
-const connectDB = require('./config/mongodb');
+// Import necessary modules
 const express = require('express');
-const app = express();
-const cors = require('cors');
-const port = 3000;
+const Coordonnees = require('../models/Coordonnees');
+const Zone = require('../models/Zone');
 
-const Zone = require('./models/Zone');
 
-const Coordonnees = require('./models/Coordonnees');
-
-require('dotenv').config();
-connectDB();
-
-// Middleware
-app.use(express.json()); // for parsing application/json
-app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-app.use(cors());
-// Routes
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
-
-// Define a route for creating new coordinates
-app.post("/coordinates", async (req, res) => {
-    try {
-        // Extract longitude, latitude, and order from the request body
-        const { longitude, latitude, order } = req.body;
-
-        // Create a new Coordonnees object with the extracted data
-        const newCoordonnees = new Coordonnees({
-            longitude,
-            latitude,
-            order,
-        });
-
-        // Save the new coordinates to the database
-        const savedCoordonnees = await newCoordonnees.save();
-
-        // Respond with the saved coordinates
-        res.status(201).json(savedCoordonnees);
-    } catch (err) {
-        // Handle any errors
-        console.error(err);
-        res.status(500).json({ error: "Server error" });
-    }
-});
-
+// Create a new router instance
+const router = express.Router();
 
 // Define a route for creating a new zone with coordinates
-app.post("/zones", async (req, res) => {
+router.post("/", async (req, res) => {
     try {
         // Extract coordinates array from the request body
         const { coordinates } = req.body;
@@ -75,7 +36,7 @@ app.post("/zones", async (req, res) => {
             // Save the new Coordonnees object to the database
             const savedCoordonnees = await newCoordonnees.save();
 
-            // Push the saved Coordonnees object ID to the array
+            // Push the saved Coordonnees object to the array
             newCoordonneesArray.push(savedCoordonnees._id);
         }
 
@@ -96,10 +57,5 @@ app.post("/zones", async (req, res) => {
     }
 });
 
-
-
-
-// Start the server
-app.listen(port, () => {
-    console.log(`Server is listening at http://localhost:${port}`);
-});
+// Export the router
+module.exports = router;
