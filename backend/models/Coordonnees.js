@@ -4,12 +4,12 @@ var Schema = mongoose.Schema;
 
 var CoordSchema = new Schema ({
     longitude: {
-        type: mongoose.SchemaTypes.Float,
-        index: true,
+        type:Number,
+        
         required: true
     },
-    Latitude: {
-        type:mongoose.SchemaTypes.Float,
+    latitude: {
+        type:Number,
         required: true
     },
     order: {
@@ -18,6 +18,6 @@ var CoordSchema = new Schema ({
     }
 });
 
-var Coordonnees = mongoose.model("Coodronees", CoordSchema);
+var Coordonnees = mongoose.model("Coordonees", CoordSchema,"Coordonnees");
 
 module.exports = Coordonnees;
