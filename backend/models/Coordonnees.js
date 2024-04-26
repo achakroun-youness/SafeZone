@@ -12,8 +12,10 @@ var CoordSchema = new Schema ({
         type:mongoose.SchemaTypes.Float,
         required: true
     },
-   
-   
+    order: {
+        type: Number, // Use Number to represent order
+        required: true
+    }
 });
 
 var Coordonnees = mongoose.model("Coodronees", CoordSchema);
