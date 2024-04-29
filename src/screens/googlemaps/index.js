@@ -34,73 +34,88 @@ const GoogleMapsScreen = () => {
     setMarkers([...markers, newMarker]);
   };
 
-  const saveAddress = async () => {
+  /** const saveAddress = async () => {
     try {
-      if (markers.length > 0) {
-        const response = await fetch('http://localhost:3000/api/coordinates', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(markers.map(marker => ({
-            latitude: marker.coordinate.latitude,
-            longitude: marker.coordinate.longitude,
-            order: markers.indexOf(marker) + 1 // Add 1 to index to start order from 1
-          })))
+        // Assuming markers is an array of coordinate objects
+        const response = await fetch('/coordinates', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(markers)
         });
-  
+
         if (!response.ok) {
-          throw new Error('Failed to save coordinates');
+            throw new Error('Failed to save coordinates');
         }
-  
+
         console.log('Coordinates saved successfully');
-      } else {
-        console.log("No markers to save.");
-      }
     } catch (error) {
-      console.error('Error saving coordinates:', error.message);
+        console.error('Error saving coordinates:', error.message);
     }
-  };
+};
+ */
   
+  /**
+   const saveAddress = () => {
+     let index=0;
+   if (markers.length > 0) {
+  markers.forEach((marker) => {
+      order=index++;
+     console.log("Latitude:", marker.coordinate.latitude);
+     console.log("Longitude:", marker.coordinate.longitude);
+      console.log("Order:", order);
 
-  
-  
+      // Do something with the latitude here, like saving it to state or sending it to a server
+   });
+  } else {
+    console.log("No markers to save.");
+  }
+};
+**/ 
 
-//   const saveAddress = () => {
-//     let index=0;
-//   if (markers.length > 0) {
-//     markers.forEach((marker) => {
-//       order=index++;
-//       console.log("Latitude:", marker.coordinate.latitude);
-//       console.log("Longitude:", marker.coordinate.longitude);
-//       console.log("Order:", order);
+const saveAddress = () => {
+  let index = 0;
+  if (markers.length > 0) {
+    markers.forEach((marker) => {
+      const order = index++; // Increment index after assigning to order
+      console.log("Latitude:", marker.coordinate.latitude);
+      console.log("Longitude:", marker.coordinate.longitude);
+      console.log("Order:", order);
 
-//       // Do something with the latitude here, like saving it to state or sending it to a server
-//     });
-//   } else {
-//     console.log("No markers to save.");
-//   }
-// };
-// const saveAddress = () => {
-//   if (markers.length > 0) {
-//     markers.forEach((marker, index) => {
-//       const { latitude, longitude } = marker.coordinate;
-//       const order = index + 1; // Add 1 to index to start order from 1
-//       const newCoord = new Coordonnees({ latitude, longitude, order });
-//       newCoord.save()
-//         .then(savedCoord => {
-//           console.log("Saved coordinate:", savedCoord);
-//           // Do something with the saved coordinate
-//         })
-//         .catch(error => {
-//           console.error("Error saving coordinate:", error);
-//           // Handle error
-//         });
-//     });
-//   } else {
-//     console.log("No markers to save.");
-//   }
-// };
+      // Assuming you have an API endpoint to save coordinates
+      const apiUrl = 'http://localhost:3000/coordinates';
+      const data = {
+        latitude: marker.coordinate.latitude,
+        longitude: marker.coordinate.longitude,
+        order: order
+      };
+
+      
+      // Make a POST request to your API
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any other headers if required
+        },
+        body: JSON.stringify(data),
+      })
+        .then(response => response.json())
+        .then(result => {
+          console.log('Coordinate saved successfully:', result);
+          // Do something with the result if needed
+        })
+        .catch(error => {
+          console.error('Error saving coordinate:', error);
+          // Handle errors here
+        });
+    });
+  } else {
+    console.log("No markers to save.");
+  }
+};
+
 
   return (
     <View style={{ flex: 1 }}>
