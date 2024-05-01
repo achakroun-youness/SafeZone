@@ -5,7 +5,7 @@ var Schema = mongoose.Schema;
 var ZoneSchema = new Schema({
     coordinates: [{
         type: Schema.Types.ObjectId, // Reference to the Coordonnees model
-        ref: 'Coordonnees'
+        ref: 'Coordinates'
     }]
 });
 

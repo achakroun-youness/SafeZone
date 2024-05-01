@@ -5,7 +5,6 @@ var Schema = mongoose.Schema;
 var CoordSchema = new Schema ({
     longitude: {
         type:Number,
-        
         required: true
     },
     latitude: {
@@ -13,11 +12,11 @@ var CoordSchema = new Schema ({
         required: true
     },
     order: {
-        type: Number, // Use Number to represent order
+        type: Number, 
         required: true
     }
 });
 
-var Coordonnees = mongoose.model("Coordonees", CoordSchema,"Coordonnees");
+var Coordinates = mongoose.model("Coordinates", CoordSchema,"Coordinates");
 
-module.exports = Coordonnees;
+module.exports = Coordinates;
