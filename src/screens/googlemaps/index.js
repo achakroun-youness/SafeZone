@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Button } from 'react-native';
 import markerIcon from './markerIcon.png';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 const fetch = require('node-fetch');
 
 const LATITUDE = 31.63416;
@@ -20,6 +20,8 @@ const GoogleMapsScreen = () => {
   });
   // markers
   const [markers, setMarkers] = useState([]);
+  // polyline coordinates
+  const [polylineCoords, setPolylineCoords] = useState([]);
 
   // setting markers
   const onMapPress = (e) => {
@@ -29,6 +31,9 @@ const GoogleMapsScreen = () => {
     };
     setMarkers([...markers, newMarker]);
     console.log('New Marker Added:', newMarker);
+
+    // Add coordinate to polyline
+    setPolylineCoords([...polylineCoords, e.nativeEvent.coordinate]);
   };
 
   // save coordinates
@@ -40,23 +45,22 @@ const GoogleMapsScreen = () => {
           latitude: marker.coordinate.latitude,
           order: index,
         };
-        console.log('Marker Data:', data);
+        console.log(data);
         return data;
       });
-
+    
       // Post marker data to your database
       try {
         const apiUrl = 'http://192.168.1.105:3000/api/coordinates';
-
+    
         const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(markerData),
-      });
-
-
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(markerData),
+        });
+  
         if (response.ok) {
           console.log('Markers saved to database successfully.');
         } else {
@@ -78,6 +82,7 @@ const GoogleMapsScreen = () => {
         initialRegion={region}
         onPress={(e) => onMapPress(e)}
       >
+        {/* Render markers */}
         {markers.map((marker) => (
           <Marker
             key={marker.key}
@@ -86,6 +91,13 @@ const GoogleMapsScreen = () => {
             style={styles.markerIcon}
           />
         ))}
+
+        {/* Render polyline */}
+        <Polyline
+          coordinates={polylineCoords}
+          strokeColor="#FF0000" // red color
+          strokeWidth={2}
+        />
       </MapView>
       <View style={styles.buttonContainer}>
         <Button title="Save" onPress={saveCoord} style={styles.button} />
