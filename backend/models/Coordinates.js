@@ -4,16 +4,16 @@ var Schema = mongoose.Schema;
 
 var CoordSchema = new Schema ({
     longitude: {
-        type:Number,
-        required: true
+        type: Number,
+        required: false
     },
     latitude: {
-        type:Number,
-        required: true
+        type: Number,
+        required: false
     },
     order: {
         type: Number, 
-        required: true
+        required: false
     }
 });
 
