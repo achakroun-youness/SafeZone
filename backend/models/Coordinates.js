@@ -5,15 +5,15 @@ var Schema = mongoose.Schema;
 var CoordSchema = new Schema ({
     longitude: {
         type: Number,
-        required: false
+        required: true
     },
     latitude: {
         type: Number,
-        required: false
+        required: true
     },
     order: {
         type: Number, 
-        required: false
+        required: true
     }
 });
 

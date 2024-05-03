@@ -36,43 +36,62 @@ const GoogleMapsScreen = () => {
     setPolylineCoords([...polylineCoords, e.nativeEvent.coordinate]);
   };
 
-  // save coordinates
-  const saveCoord = async () => {
-    if (markers.length > 0) {
-      const markerData = markers.map((marker, index) => {
-        const data = {
-          longitude: marker.coordinate.longitude,
-          latitude: marker.coordinate.latitude,
-          order: index,
-        };
-        console.log(data);
-        return data;
+ // save coordinates and zone
+const saveCoordAndZone = async () => {
+  if (markers.length > 0) {
+    const markerData = markers.map((marker, index) => {
+      const data = {
+        longitude: marker.coordinate.longitude,
+        latitude: marker.coordinate.latitude,
+        order: index,
+      };
+      console.log(data);
+      return data;
+    });
+
+    try {
+      // Post marker data to save coordinates
+      const coordApiUrl = 'http://192.168.1.105:3000/api/coordinates';
+      const coordResponse = await fetch(coordApiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(markerData),
       });
-    
-      // Post marker data to your database
-      try {
-        const apiUrl = 'http://192.168.1.105:3000/api/coordinates';
-    
-        const response = await fetch(apiUrl, {
+
+      if (coordResponse.ok) {
+        console.log('Markers saved to database successfully.');
+
+        // Get the IDs of saved coordinates
+        const coordinateIds = await coordResponse.json();
+
+        // Post zone data to save zone
+        const zoneApiUrl = 'http://192.168.1.105:3000/api/zones';
+        const zoneResponse = await fetch(zoneApiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(markerData),
+          body: JSON.stringify({ coordinates: coordinateIds }),
         });
-  
-        if (response.ok) {
-          console.log('Markers saved to database successfully.');
+
+        if (zoneResponse.ok) {
+          console.log('Zone saved to database successfully.');
         } else {
-          console.error('Failed to save markers to database.');
+          console.error('Failed to save zone to database.');
         }
-      } catch (error) {
-        console.error('Error saving markers to database:', error);
+      } else {
+        console.error('Failed to save markers to database.');
       }
-    } else {
-      console.log('No markers to save.');
+    } catch (error) {
+      console.error('Error saving data to database:', error);
     }
-  };
+  } else {
+    console.log('No markers to save.');
+  }
+};
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -100,7 +119,7 @@ const GoogleMapsScreen = () => {
         />
       </MapView>
       <View style={styles.buttonContainer}>
-        <Button title="Save" onPress={saveCoord} style={styles.button} />
+        <Button title="Save" onPress={saveCoordAndZone} style={styles.button} />
       </View>
     </View>
   );

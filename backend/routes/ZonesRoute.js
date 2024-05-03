@@ -1,11 +1,8 @@
-var express = require('express');
-var router = express.Router();
-var zoneController = require('../controllers/ZoneController');
+const express = require('express');
+const zoneController = require('../controllers/ZoneController');
+const router = express.Router();
 
-// Route to create a new zone
-router.post('/', zoneController.createZone);
+router.post("/zone", zoneController.createZone);
 
-// Route to get all zones
-router.get('/', zoneController.getAllZones);
 
 module.exports = router;
