@@ -97,7 +97,7 @@ const saveCoordAndZone = async () => {
     <View style={{ flex: 1 }}>
       <MapView
         style={{ flex: 1 }}
-        provider={PROVIDER_GOOGLE}
+        provider={"google"-"mapKit"}
         initialRegion={region}
         onPress={(e) => onMapPress(e)}
       >
