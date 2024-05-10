@@ -51,13 +51,15 @@ const saveCoordAndZone = async () => {
 
     try {
       // Post marker data to save coordinates
-      const coordApiUrl = 'http://192.168.1.105:3000/api/coordinates';
+      const coordApiUrl = 'http://192.168.1.107:3000/api/coordinates';
       const coordResponse = await fetch(coordApiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(markerData),
+
+        
       });
 
       if (coordResponse.ok) {
@@ -67,7 +69,7 @@ const saveCoordAndZone = async () => {
         const coordinateIds = await coordResponse.json();
 
         // Post zone data to save zone
-        const zoneApiUrl = 'http://192.168.1.105:3000/api/zones';
+        const zoneApiUrl = 'http://192.168.1.107:3000/api/zone';
         const zoneResponse = await fetch(zoneApiUrl, {
           method: 'POST',
           headers: {
