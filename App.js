@@ -1,5 +1,5 @@
 import React from 'react';
-import GoogleMapsScreen from './src/screens/googlemaps';
+import GoogleMapsScreen from './Pages/GoogleMapsScreen';
 
 export default function App() {
   
