@@ -4,7 +4,7 @@
     "slug": "SafeZone-Project",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/union@3x.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
