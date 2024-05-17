@@ -1,35 +1,122 @@
-import React,{useState,useContext,useEffect} from 'react'
-import { TouchableOpacity } from 'react-native';
-import { View } from 'react-native';
-import {Text,Input,Button} from 'react-native-elements';
-import {Context as AuthContext} from '../context/AuthContext';
+import * as React from "react";
+import { StyleSheet, View, Text, TextInput, TouchableOpacity } from "react-native";
+import { Image } from "expo-image";
+import { FontSize, Color, Border, FontFamily, Padding } from "../../../GlobalStyles";
 
-const SignInScreen = ({navigation}) => {
-    const {state, signIn,clearErrorMessage,tryLocalSignIn}= useContext(AuthContext);
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
+const Login = ({navigation}) => {
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
 
-    useEffect(()=>{
-        tryLocalSignIn();
-    },[]);
+  const handleLogin = () => {
+    navigation.replace("NavigationFrame"); 
+  };
 
-    return (
-        <View style={{flex:1,backgroundColor:'#FFFFFF'}}>
-        <View style={{flex:1,justifyContent:'center',marginBottom:180,paddingLeft:10,paddingRight:10}}>
-           <Text h2 style={{marginLeft:10,marginBottom:20}} >Sign In</Text> 
-           <Input label="Email" value={email} onChangeText={setEmail} autoCorrect={false} autoCapitalize="none"/>
-           <Input label="Password" value={password} onChangeText={setPassword} autoCorrect={false} autoCapitalize="none" secureTextEntry/>
-           {state.errorMessage?(<Text style={{marginLeft:10,color:'red',marginBottom:10}}>{state.errorMessage}</Text>):null}
-           <Button title="Sign In" onPress={()=>signIn({email,password})}/>
-           <TouchableOpacity onPress={()=>{clearErrorMessage();navigation.navigate("SignUpScreen")}}><Text h5 style={{marginTop:15,marginLeft:5,color:'#1976D2',fontWeight:'bold'}}>Don't have an account? Sign Up</Text></TouchableOpacity>
+  const handleSignup = () => {
+    navigation.replace("Register");
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <Image
+          style={styles.image}
+          contentFit="cover"
+          source={require("../../../assets/union.png")}
+        />
+      </View>
+      <Text style={styles.signIn}>Sign In</Text>
+      <View style={styles.formContainer}>
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Email</Text>
+          <TextInput
+            style={styles.inputField}
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Enter your email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
         </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Password</Text>
+          <TextInput
+            style={styles.inputField}
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Enter your password"
+            secureTextEntry
+          />
         </View>
-    )
-}
+        <TouchableOpacity style={styles.logInButton} onPress={handleLogin}>
+          <Text style={styles.logInButtonText}>Log in</Text>
+        </TouchableOpacity>
+        <Text style={styles.signUpLink}>Don’t have an account?</Text>
+        <TouchableOpacity onPress={handleSignup}>
+          <Text style={styles.signUpLinkText}>Sign up</Text>
+        </TouchableOpacity>
+        
+      </View>
+    </View>
+  );
+};
 
-SignInScreen.navigationOptions=()=>{
-    return{
-        header:null
-    }
-}
-export default SignInScreen
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+  },
+  imageContainer: {
+    marginTop: 100,
+  },
+  image: {
+    width: 100,
+    height: 100,
+  },
+  signIn: {
+    fontSize: FontSize.size_13xl,
+    fontFamily: FontFamily.balooThambiMedium,
+    color: Color.labelColorLightPrimary,
+    marginTop: 20, // Adjust as needed
+  },
+  formContainer: {
+    marginTop: 30, // Adjust as needed
+    width: "80%", // Adjust as needed
+  },
+  inputContainer: {
+    marginBottom: 10, // Adjust as needed
+  },
+  inputLabel: {
+    fontSize: FontSize.bodySmall400_size,
+    fontFamily: FontFamily.bodySmall400,
+    color: Color.gray600,
+    marginBottom: 5, // Adjust as needed
+  },
+  inputField: {
+    borderWidth: 1,
+    borderColor: Color.gray600,
+    borderRadius: Border.br_3xs,
+    padding: 10,
+  },
+  logInButton: {
+    backgroundColor: Color.colorMediumaquamarine,
+    paddingVertical: 10,
+    borderRadius: Border.br_sm,
+    marginTop: 20, // Adjust as needed
+  },
+  logInButtonText: {
+    color: Color.colorWhite,
+    fontSize: FontSize.calloutBold_size,
+    fontFamily: FontFamily.almaraiExtraBold,
+    textAlign: "center",
+  },
+  signUpLink: {
+    textAlign: "center",
+    marginTop: 10, // Adjust as needed
+  },
+  signUpLinkText: {
+    textAlign: "center",
+    color: Color.colorLimegreen,
+  },
+});
+
+export default Login;

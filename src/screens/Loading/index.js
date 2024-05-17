@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StyleSheet, View } from "react-native";
 import { Image } from "expo-image";
-import { Color } from "../GlobalStyles";
+import { Color } from "../../../GlobalStyles";
 import { useEffect } from "react";
 
 const Loading = ({navigation}) => {
@@ -18,7 +18,7 @@ const Loading = ({navigation}) => {
         <Image
           style={styles.frameItem}
           contentFit="cover"
-          source={require("../assets/frame-567369794.png")}
+          source={require("../../../assets/frame-567369794.png")}
         />
       </View>
     </View>

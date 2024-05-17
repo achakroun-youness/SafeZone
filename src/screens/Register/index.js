@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
-import { FontSize, Color, Border, FontFamily, Padding } from "../GlobalStyles";
+import { FontSize, Color, Border, FontFamily, Padding } from "../../../GlobalStyles";
 
 const Register = ({navigation}) => {
   const [email, setEmail] = React.useState("");
@@ -21,7 +21,7 @@ const Register = ({navigation}) => {
         <Image
           style={styles.image}
           contentFit="cover"
-          source={require("../assets/union.png")}
+          source={require("../../../assets/union.png")}
         />
       </View>
       <Text style={styles.signIn}>Sign Up</Text>

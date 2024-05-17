@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { StyleSheet, View, Text, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
-import { FontFamily, Color, FontSize } from '../GlobalStyles';
+import { FontFamily, Color, FontSize } from "../../../GlobalStyles";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import GoogleMapsScreen from './GoogleMapsScreen';
+import GoogleMapsScreen from '../Googlemaps';
 
 const { height, width } = Dimensions.get('window');
 
@@ -21,7 +21,7 @@ const NavigationFrame = () => {
             options={{
               tabBarIcon: ({ focused }) => (
                 <Image
-                  source={require('../assets/vector2.png')}
+                  source={require('../../../assets/vector2.png')}
                   style={{
                     height: 20,
                     width: 20,

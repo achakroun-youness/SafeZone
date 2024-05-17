@@ -1,14 +1,14 @@
 import * as React from "react";
 import { StyleSheet, View, Text, Dimensions, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
-import { Color, FontFamily, Border, FontSize } from "../GlobalStyles";
+import { Color, FontFamily, Border, FontSize } from "../../../GlobalStyles";
 import Carousel from "react-native-reanimated-carousel";
 
 const { width } = Dimensions.get('window');
 
 const images = [
-    require("../assets/navigationpana-1.png"),
-    require("../assets/superheroamico-1.png")
+    require("../../../assets/navigationpana-1.png"),
+    require("../../../assets/superheroamico-1.png")
 ];
 
 const Start = ({navigation}) => {
@@ -26,7 +26,7 @@ const Start = ({navigation}) => {
         <Image
           style={styles.image}
           contentFit="cover"
-          source={require("../assets/union.png")}
+          source={require("../../../assets/union.png")}
         />
         <Text style={styles.securcity}>SecurCity</Text>
       </View>

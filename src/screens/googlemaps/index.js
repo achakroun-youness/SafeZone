@@ -114,11 +114,11 @@ const saveCoordAndZone = async () => {
         ))}
 
         {/* Render polyline */}
-        <Polyline
+        {/* <Polyline
           coordinates={polylineCoords}
           strokeColor="#FF0000" // red color
           strokeWidth={2}
-        />
+        /> */}
       </MapView>
       <View style={styles.buttonContainer}>
         <Button title="Save" onPress={saveCoordAndZone} style={styles.button} />
