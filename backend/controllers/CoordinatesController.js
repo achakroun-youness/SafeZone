@@ -16,7 +16,13 @@ const Coordinates = require('../models/Coordinates');
 // Controller for creating a new array of coordinates
 exports.createCoordinates = async (req, res) => {
     try {
-        const coordinatesData = req.body; // Assuming the request body contains an array of coordinates
+        const coordinatesData = req.body;
+        
+        // Check if coordinatesData is an array
+        if (!Array.isArray(coordinatesData)) {
+            return res.status(400).json({ error: 'Coordinates data must be an array' });
+        }
+
         const coordinates = [];
 
         // Iterate over each coordinate data and save it
@@ -33,6 +39,7 @@ exports.createCoordinates = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 
 // Controller for getting all coordinates

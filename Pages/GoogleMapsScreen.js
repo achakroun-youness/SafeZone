@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Button } from 'react-native';
-import markerIcon from './markerIcon.png';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import markerIcon from '../assets/markerIcon.png';
+import MapView, { Marker, Polyline, mapKit } from 'react-native-maps';
 const fetch = require('node-fetch');
 
 const LATITUDE = 31.63416;
@@ -31,10 +31,11 @@ const GoogleMapsScreen = () => {
     };
     setMarkers([...markers, newMarker]);
     console.log('New Marker Added:', newMarker);
-
+  
     // Add coordinate to polyline
     setPolylineCoords([...polylineCoords, e.nativeEvent.coordinate]);
   };
+  
 
  // save coordinates and zone
 const saveCoordAndZone = async () => {
@@ -51,7 +52,7 @@ const saveCoordAndZone = async () => {
 
     try {
       // Post marker data to save coordinates
-      const coordApiUrl = 'http://192.168.1.107:3000/api/coordinates';
+      const coordApiUrl = 'http://192.168.56.1:3000/api/coordinates';
       const coordResponse = await fetch(coordApiUrl, {
         method: 'POST',
         headers: {
@@ -69,14 +70,14 @@ const saveCoordAndZone = async () => {
         const coordinateIds = await coordResponse.json();
 
         // Post zone data to save zone
-        const zoneApiUrl = 'http://192.168.1.107:3000/api/zone';
-        const zoneResponse = await fetch(zoneApiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ coordinates: coordinateIds }),
-        });
+        // const zoneApiUrl = 'http://192.168.56.1:3000/api/zone';
+        // const zoneResponse = await fetch(zoneApiUrl, {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        //   body: JSON.stringify({ coordinates: coordinateIds }),
+        // });
 
         if (zoneResponse.ok) {
           console.log('Zone saved to database successfully.');
@@ -99,7 +100,7 @@ const saveCoordAndZone = async () => {
     <View style={{ flex: 1 }}>
       <MapView
         style={{ flex: 1 }}
-        provider={"google"-"mapKit"}
+        provider={mapKit}
         initialRegion={region}
         onPress={(e) => onMapPress(e)}
       >
