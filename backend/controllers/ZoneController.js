@@ -1,53 +1,76 @@
-// Import necessary modules
-const Coordinates = require('../models/Coordinates');
 const Zone = require('../models/Zone');
+const Coordinates = require('../models/Coordinates');
 
-// Define controller function for creating a new zone with coordinates
-exports.createZone = async (req, res) => {
+// Get all zones
+exports.getAllZones = async (req, res) => {
     try {
-        // Extract coordinates array from the request body
-        const { coordinates } = req.body;
+        const zones = await Zone.find().populate('coordinates');
+        res.status(200).json(zones);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
-        // Validate that coordinates is an array
-        if (!Array.isArray(coordinates)) {
-            return res.status(400).json({ error: "Coordinates must be an array" });
-        }
+// Get a single zone by ID
+exports.getZoneById = async (req, res) => {
+    try {
+        const zone = await Zone.findById(req.params.id).populate('coordinates');
+        if (!zone) return res.status(404).json({ message: "Zone not found" });
+        res.status(200).json(zone);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
-        // Create an array to store new Coordonnees objects
-        const newCoordinatesArray = [];
+// Create a new zone
+exports.createZone = async (req, res) => {
+    const { coordinates } = req.body;
 
-        // Loop through each coordinate object in the array
-        for (const coord of coordinates) {
-            // Extract longitude, latitude, and order from the coordinate object
-            const { longitude, latitude, order } = coord;
+    // Ensure coordinates are provided and are an array
+    if (!coordinates || !Array.isArray(coordinates)) {
+        return res.status(400).json({ message: "Coordinates must be an array of ObjectId references" });
+    }
 
-            // Create a new Coordonnees object with the extracted data
-            const newCoordinates = new Coordinates({
-                longitude,
-                latitude,
-                order,
-            });
+    const zone = new Zone({
+        coordinates: coordinates
+    });
 
-            // Save the new Coordonnees object to the database
-            const savedCoordinates = await newCoordinates.save();
+    try {
+        const newZone = await zone.save();
+        res.status(201).json(newZone);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
 
-            // Push the saved Coordonnees object to the array
-            newCoordinatesArray.push(savedCoordinates._id);
-        }
+// Update a zone by ID
+exports.updateZone = async (req, res) => {
+    const { coordinates } = req.body;
 
-        // Create a new Zone object with the array of Coordonnees object IDs
-        const newZone = new Zone({
-            coordinates: newCoordinatesArray,
-        });
+    if (coordinates && !Array.isArray(coordinates)) {
+        return res.status(400).json({ message: "Coordinates must be an array of ObjectId references" });
+    }
 
-        // Save the new zone to the database
-        const savedZone = await newZone.save();
+    try {
+        const updatedZone = await Zone.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        if (!updatedZone) return res.status(404).json({ message: "Zone not found" });
+        res.status(200).json(updatedZone);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
 
-        // Respond with the saved zone
-        res.status(201).json(savedZone);
-    } catch (err) {
-        // Handle any errors
-        console.error(err);
-        res.status(500).json({ error: "Server error" });
+// Delete a zone by ID
+exports.deleteZone = async (req, res) => {
+    try {
+        const zone = await Zone.findByIdAndDelete(req.params.id);
+        if (!zone) return res.status(404).json({ message: "Zone not found" });
+        res.status(200).json({ message: "Zone deleted" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };

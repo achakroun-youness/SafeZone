@@ -81,7 +81,7 @@ const GoogleMapsScreen = () => {
           console.log('Markers saved to database successfully.');
           const coordinateIds = await coordResponse.json();
 
-          const zoneApiUrl = 'http://192.168.56.1:3000/api/zone';
+          const zoneApiUrl = 'http://192.168.56.1:3000/api/zones';
           const zoneResponse = await fetch(zoneApiUrl, {
             method: 'POST',
             headers: {
@@ -99,7 +99,7 @@ const GoogleMapsScreen = () => {
           console.error('Failed to save markers to database.');
         }
       } catch (error) {
-        console.error('Error saving data to database:', error);
+        console.error('Error saving data to database:', error.message);
       }
     } else {
       console.log('No markers to save.');
