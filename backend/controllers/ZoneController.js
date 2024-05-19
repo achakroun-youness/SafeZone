@@ -22,7 +22,8 @@ exports.getZoneById = async (req, res) => {
     }
 };
 
-// Create a new zone
+
+// Define controller function for creating a new zone with coordinates
 exports.createZone = async (req, res) => {
     try {
         // Extract coordinates array from the request body
