@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Button, StyleSheet } from 'react-native';
-import MapView, { Marker, Polyline, mapKit } from 'react-native-maps';
+import MapView, { Marker, Polygon, Polyline, mapKit, PROVIDER_GOOGLE } from 'react-native-maps';
 const fetch = require('node-fetch');
 
 const LATITUDE = 31.63416;
@@ -20,8 +20,10 @@ const GoogleMapsScreen = () => {
 
   const [markers, setMarkers] = useState([]);
   const [polylineCoords, setPolylineCoords] = useState([]);
+  const [PolygonCoord, setPolygonCoord] = useState([])
 
   const onMapPress = (e) => {
+    setPolylineCoords([])
     const newMarker = {
       coordinate: e.nativeEvent.coordinate,
       key: id++,
@@ -44,9 +46,11 @@ const GoogleMapsScreen = () => {
         markers[index]?.key === markerKey ? newCoordinate : coord
       )
     );
+    setPolylineCoords([])
   };
 
   const saveCoordAndZone = async () => {
+
     if (markers.length > 0) {
       const markerData = markers.map((marker, index) => ({
         longitude: marker.coordinate.longitude,
@@ -59,7 +63,7 @@ const GoogleMapsScreen = () => {
       markerData.forEach((marker, index) => {
         console.log(`Marker ${index + 1}:`, marker);
       });
-
+      setPolygonCoord(...PolygonCoord, [markerData])
       // Close the polyline by adding the first marker's coordinate at the end
       const closedPolylineCoords = [
         ...polylineCoords,
@@ -68,38 +72,21 @@ const GoogleMapsScreen = () => {
       setPolylineCoords(closedPolylineCoords);
 
       try {
-        const coordApiUrl = 'http://192.168.56.1:3000/api/coordinates';
-        const coordResponse = await fetch(coordApiUrl, {
+        console.log({ coordinates: markerData });
+        fetch("http://192.168.100.11:3000/api/zones", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(markerData),
-        });
+          body: JSON.stringify({ coordinates: markerData }),
+        }).then(res => res.json())
+          .then(data => {
+            setMarkers([]);
+            setPolylineCoords([])
+          })
 
-        if (coordResponse.ok) {
-          console.log('Markers saved to database successfully.');
-          const coordinateIds = await coordResponse.json();
-
-          const zoneApiUrl = 'http://192.168.56.1:3000/api/zones';
-          const zoneResponse = await fetch(zoneApiUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ coordinates: coordinateIds }),
-          });
-
-          if (zoneResponse.ok) {
-            console.log('Zone saved to database successfully.');
-          } else {
-            console.error('Failed to save zone to database.');
-          }
-        } else {
-          console.error('Failed to save markers to database.');
-        }
       } catch (error) {
-        console.error('Error saving data to database:', error.message);
+        console.error('Error saving data to database:', error);
       }
     } else {
       console.log('No markers to save.');
@@ -125,6 +112,16 @@ const GoogleMapsScreen = () => {
         ))}
 
         <Polyline coordinates={polylineCoords} strokeColor="#FF0000" strokeWidth={2} />
+        {PolygonCoord.map((coord, index) => (
+
+          <Polygon
+            coordinates={coord}
+            key={index}
+            fillColor="rgba(0, 200, 0, 0.5)" // Semi-transparent fill color
+            strokeColor="rgba(0,0,0,0.5)" // Outline color
+            strokeWidth={2}
+          />
+        ))}
       </MapView>
       <View style={styles.buttonContainer}>
         <Button title="Save" onPress={saveCoordAndZone} style={styles.button} />

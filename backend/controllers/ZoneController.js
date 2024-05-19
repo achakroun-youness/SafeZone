@@ -4,24 +4,61 @@ const Coordinates = require('../models/Coordinates');
 // Get all zones
 exports.getAllZones = async (req, res) => {
     try {
-        const zones = await Zone.find().populate('coordinates');
-        res.status(200).json(zones);
+        const zones = await Zone.find().exec();
+
+        const zonesWithCoordinates = await Promise.all(zones.map(async (zone) => {
+            const coordinatesDetails = await Coordinates.find({
+                _id: { $in: zone.coordinates }
+            }).exec();
+
+            return {
+                _id: zone._id,
+                coordinates: coordinatesDetails.map(coord => ({
+                    longitude: coord.longitude,
+                    latitude: coord.latitude,
+                    order: coord.order
+                }))
+            };
+        }));
+
+        res.status(200).json(zonesWithCoordinates);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).send({ message: 'Server error' });
     }
 };
 
 // Get a single zone by ID
+
 exports.getZoneById = async (req, res) => {
     try {
-        const zone = await Zone.findById(req.params.id).populate('coordinates');
-        if (!zone) return res.status(404).json({ message: "Zone not found" });
-        res.status(200).json(zone);
+        const zoneId = req.params.id;
+        const zone = await Zone.findById(zoneId).exec();
+
+        if (!zone) {
+            return res.status(404).send({ message: 'Zone not found' });
+        }
+
+        // Fetch coordinates details
+        const coordinatesDetails = await Coordinates.find({
+            _id: { $in: zone.coordinates }
+        }).exec();
+
+        // Construct the response
+        const response = {
+            coordinates: coordinatesDetails.map(coord => ({
+                longitude: coord.longitude,
+                latitude: coord.latitude,
+                order: coord.order
+            }))
+        };
+
+        res.status(200).json(response);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).send({ message: 'Server error' });
     }
 };
-
 
 // Define controller function for creating a new zone with coordinates
 exports.createZone = async (req, res) => {
