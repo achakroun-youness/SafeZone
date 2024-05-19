@@ -2,11 +2,20 @@ const express = require('express');
 const router = express.Router();
 const zoneController = require('../controllers/ZoneController');
 
+
+
+const validateObjectId = (req, res, next) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid Zone ID' });
+    }
+    next();
+  };
+  
 // Get all zones
 router.get('/Allzones', zoneController.getAllZones);
 
 // Get a single zone by ID
-router.get('/:id', zoneController.getZoneById);
+router.get('/zones/:id', zoneController.getZoneById);
 
 // Create a new zone
 router.post('/zones', zoneController.createZone);

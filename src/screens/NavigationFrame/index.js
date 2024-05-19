@@ -3,7 +3,8 @@ import { StyleSheet, View, Text, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { FontFamily, Color, FontSize } from "../../../GlobalStyles";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import GoogleMapsScreen from '../Googlemaps';
+import GoogleMapsScreen from '../../../Pages/GoogleMapsScreen';
+
 
 const { height, width } = Dimensions.get('window');
 

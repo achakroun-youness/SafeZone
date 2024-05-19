@@ -4,6 +4,7 @@ import { Image } from "expo-image";
 import { FontSize, Color, Border, FontFamily, Padding } from "../../../GlobalStyles";
 
 const Register = ({navigation}) => {
+  const [name,setName] = React.useState("")
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
@@ -30,8 +31,8 @@ const Register = ({navigation}) => {
           <Text style={styles.inputLabel}>Name</Text>
           <TextInput
             style={styles.inputField}
-            value={email}
-            onChangeText={setEmail}
+            value={name}
+            onChangeText={setName}
             placeholder="Enter your full name"
             keyboardType="name"
             autoCapitalize="none"

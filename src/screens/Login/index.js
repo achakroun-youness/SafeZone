@@ -3,12 +3,16 @@ import { StyleSheet, View, Text, TextInput, TouchableOpacity } from "react-nativ
 import { Image } from "expo-image";
 import { FontSize, Color, Border, FontFamily, Padding } from "../../../GlobalStyles";
 
+
+
 const Login = ({navigation}) => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  
+
 
   const handleLogin = () => {
-    navigation.replace("NavigationFrame"); 
+    navigation.replace("NavigationFrame");
   };
 
   const handleSignup = () => {

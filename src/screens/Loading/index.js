@@ -1,22 +1,45 @@
 import * as React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Animated, Easing } from "react-native";
 import { Image } from "expo-image";
 import { Color } from "../../../GlobalStyles";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
-const Loading = ({navigation}) => {
+const Loading = ({ navigation }) => {
+  const rotateValue = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
+    const startRotation = () => {
+      rotateValue.setValue(0);
+      Animated.timing(rotateValue, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+        easing: Easing.linear,
+      }).start(() => startRotation());
+    };
+
+    startRotation();
+
     const timer = setTimeout(() => {
-      navigation.replace("Start"); 
-    }, 2000); 
-    return () => clearTimeout(timer);
-  }, []);
+      navigation.replace("Start");
+    }, 2000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [rotateValue, navigation]);
+
+  const rotation = rotateValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"],
+  });
+
   return (
     <View style={styles.container}>
       <View style={styles.frameChild} />
       <View style={styles.imageContainer}>
-        <Image
-          style={styles.frameItem}
+        <Animated.Image
+          style={[styles.frameItem, { transform: [{ rotate: rotation }] }]}
           contentFit="cover"
           source={require("../../../assets/frame-567369794.png")}
         />
