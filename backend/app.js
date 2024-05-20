@@ -13,7 +13,7 @@ const app = express();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
-
+app.use(express.urlencoded({extended:true}));
 // CORS
 app.use(cors());
 
@@ -27,7 +27,7 @@ app.use('/api/coordinates', coordRoutes);
 app.use('/api', zoneRoutes);
 app.use('/api', UserRoutes);
 
-app.get('/login', async (req, res) => {
+app.post('/login', async (req, res) => {
     try {
       const { email, password } = req.body;
   

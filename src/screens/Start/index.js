@@ -13,11 +13,11 @@ const images = [
 
 const Start = ({navigation}) => {
   const handleLogin = () => {
-    navigation.replace("Login"); 
+    navigation.navigate('Auth', { screen: 'Login' }); 
   };
 
   const handleSignup = () => {
-    navigation.replace("Register"); 
+    navigation.navigate('Auth', { screen: 'Danger' }); 
 
   };
   return (
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    paddingBottom: 30, // Adjust the padding to move content away from the bottom
+    paddingBottom: 30,
   },
   titleContainer: {
     marginTop: 70,
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     backgroundColor: Color.colorMediumaquamarine,
     paddingVertical: 10,
     borderRadius: Border.br_sm,
-    marginTop: 20, // Adjust as needed
+    marginTop: 20,
     width: "95%",
   },
   getStarted: {
@@ -122,11 +122,11 @@ const styles = StyleSheet.create({
   },
   alreadyHaveAn: {
     color: Color.colorDimgray,
-    marginTop: 10, // Added marginTop to separate the text from the button
+    marginTop: 10,
   },
   logIn: {
     color: Color.colorLimegreen,
-    marginTop: 5, // Added marginTop to separate the text from the "Already have an account?" text
+    marginTop: 5,
   },
   unionIcon: {
     width: 64,
