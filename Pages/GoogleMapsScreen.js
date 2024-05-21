@@ -6,6 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import fetch from 'node-fetch';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import pointInPolygon from 'point-in-polygon';
 
 const LATITUDE = 31.63416;
 const LONGITUDE = -7.99994;
@@ -51,21 +52,17 @@ const GoogleMapsScreen = () => {
   useEffect(() => {
     const requestPermissions = async () => {
       try {
-        const storedStatus = await AsyncStorage.getItem('locationPermission');
-        if (storedStatus === 'granted') {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status === 'granted') {
+          await AsyncStorage.setItem('locationPermission', 'granted');
           subscribeToHeading();
+          getCurrentLocation();
         } else {
-          let { status } = await Location.requestForegroundPermissionsAsync();
-          if (status === 'granted') {
-            await AsyncStorage.setItem('locationPermission', 'granted');
-            subscribeToHeading();
-          } else {
-            Alert.alert(
-              'Permission Denied',
-              'Please grant permission to access your location in order to use this feature.',
-              [{ text: 'OK', onPress: () => Location.openSettings() }]
-            );
-          }
+          Alert.alert(
+            'Permission Denied',
+            'Please grant permission to access your location in order to use this feature.',
+            [{ text: 'OK', onPress: () => Location.openSettings() }]
+          );
         }
       } catch (error) {
         console.error('Error requesting permissions:', error);
@@ -76,20 +73,19 @@ const GoogleMapsScreen = () => {
   }, []);
 
   useEffect(() => {
-    getCurrentLocation();
-  }, []);
+    if (region.latitude && region.longitude) {
+      checkIfInsideZone(region.latitude, region.longitude);
+    }
+  }, [region, polygonCoords]);
 
   const getCurrentLocation = async () => {
     try {
-      const storedStatus = await AsyncStorage.getItem('locationPermission');
-      if (storedStatus === 'granted') {
-        let location = await Location.getCurrentPositionAsync({});
-        setRegion({
-          ...region,
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        });
-      }
+      let location = await Location.getCurrentPositionAsync({});
+      setRegion({
+        ...region,
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
     } catch (error) {
       console.error('Error fetching current location:', error);
     }
@@ -105,7 +101,16 @@ const GoogleMapsScreen = () => {
     }
   };
 
-  const iconRotation = heading ? heading * Math.PI / 180 : 0;
+  const checkIfInsideZone = (latitude, longitude) => {
+    const point = [longitude, latitude];
+    for (const polygon of polygonCoords) {
+      const polygonPoints = polygon.map(coord => [coord.longitude, coord.latitude]);
+      if (pointInPolygon(point, polygonPoints)) {
+        Alert.alert('Zone Alert', 'You are inside a defined zone.');
+        break;
+      }
+    }
+  };
 
   const onMarkerDragEnd = (e, markerKey) => {
     const newCoordinate = e.nativeEvent.coordinate;
@@ -271,4 +276,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GoogleMapsScreen;
+export default GoogleMapsScreen

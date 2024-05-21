@@ -14,7 +14,7 @@ const store = configureStore({
 const initializeApp = async () => {
   try {
     const userData = await AsyncStorage.getItem('user');
-    console.log(userData);
+    console.log("Storage",userData);
     if (userData) {
       const user = JSON.parse(userData);
       store.dispatch(login(user));
