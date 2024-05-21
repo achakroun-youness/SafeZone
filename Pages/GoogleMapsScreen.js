@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Button, StyleSheet, Alert } from 'react-native';
 import MapView, { Marker, Polygon, Polyline, mapKit } from 'react-native-maps';
-import * as Location from 'expo-location'; // Import expo-location
-import { MaterialIcons } from '@expo/vector-icons'; // Import icon library
+import * as Location from 'expo-location';
+import { MaterialIcons } from '@expo/vector-icons';
 import fetch from 'node-fetch';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LATITUDE = 31.63416;
 const LONGITUDE = -7.99994;
@@ -24,7 +25,7 @@ const GoogleMapsScreen = () => {
   const [markers, setMarkers] = useState([]);
   const [polylineCoords, setPolylineCoords] = useState([]);
   const [polygonCoords, setPolygonCoords] = useState([]);
-  const [heading, setHeading] = useState(0); // State to hold user's heading
+  const [heading, setHeading] = useState(0);
 
   useEffect(() => {
     const fetchZones = async () => {
@@ -42,20 +43,29 @@ const GoogleMapsScreen = () => {
     };
 
     fetchZones();
+    const intervalId = setInterval(fetchZones, 20000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
     const requestPermissions = async () => {
       try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          Alert.alert(
-            'Permission Denied',
-            'Please grant permission to access your location in order to use this feature.',
-            [{ text: 'OK', onPress: () => Location.openSettings() }]
-          );
+        const storedStatus = await AsyncStorage.getItem('locationPermission');
+        if (storedStatus === 'granted') {
+          subscribeToHeading();
         } else {
-          subscribeToHeading(); // If permission is granted, subscribe to heading updates
+          let { status } = await Location.requestForegroundPermissionsAsync();
+          if (status === 'granted') {
+            await AsyncStorage.setItem('locationPermission', 'granted');
+            subscribeToHeading();
+          } else {
+            Alert.alert(
+              'Permission Denied',
+              'Please grant permission to access your location in order to use this feature.',
+              [{ text: 'OK', onPress: () => Location.openSettings() }]
+            );
+          }
         }
       } catch (error) {
         console.error('Error requesting permissions:', error);
@@ -71,23 +81,15 @@ const GoogleMapsScreen = () => {
 
   const getCurrentLocation = async () => {
     try {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        // Permission denied, handle gracefully
-        Alert.alert(
-          'Permission Denied',
-          'Please grant permission to access your location in order to use this feature.',
-          [{ text: 'OK', onPress: () => Location.openSettings() }]
-        );
-        return;
+      const storedStatus = await AsyncStorage.getItem('locationPermission');
+      if (storedStatus === 'granted') {
+        let location = await Location.getCurrentPositionAsync({});
+        setRegion({
+          ...region,
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        });
       }
-
-      let location = await Location.getCurrentPositionAsync({});
-      setRegion({
-        ...region,
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      });
     } catch (error) {
       console.error('Error fetching current location:', error);
     }
@@ -96,7 +98,7 @@ const GoogleMapsScreen = () => {
   const subscribeToHeading = async () => {
     try {
       await Location.watchHeadingAsync((newHeading) => {
-        setHeading(newHeading.trueHeading || 0); // Use trueHeading if available
+        setHeading(newHeading.trueHeading || 0);
       });
     } catch (error) {
       console.error('Error subscribing to heading:', error);
@@ -124,78 +126,75 @@ const GoogleMapsScreen = () => {
   const deleteLastMarker = () => {
     setMarkers((prevMarkers) => {
       const newMarkers = [...prevMarkers];
-      newMarkers.pop(); // Remove the last marker
+      newMarkers.pop();
       return newMarkers;
     });
     setPolylineCoords((prevCoords) => {
       const newCoords = [...prevCoords];
-      newCoords.pop(); // Remove the last coordinate
+      newCoords.pop();
       return newCoords;
     });
   };
-  const saveCoordAndZone = async () => {
 
+  const saveCoordAndZone = async () => {
     Alert.alert(
       "Save Zone",
-      "Are you sure you want to Save this Zone ",
+      "Are you sure you want to Save this Zone",
       [
-          {
-              text :"No", onPress : ()=> {
-                setMarkers([]);
-                setPolylineCoords([]);
-              }
-          },
+        {
+          text: "No", onPress: () => {
+            setMarkers([]);
+            setPolylineCoords([]);
+          }
+        },
+        {
+          text: "Yes", onPress: async () => {
+            if (markers.length > 0) {
+              const markerData = markers.map((marker, index) => ({
+                longitude: marker.coordinate.longitude,
+                latitude: marker.coordinate.latitude,
+                order: index,
+              }));
 
-          {
-              text :"Yes", onPress : async()=> {
-                if (markers.length > 0) {
-                  const markerData = markers.map((marker, index) => ({
-                    longitude: marker.coordinate.longitude,
-                    latitude: marker.coordinate.latitude,
-                    order: index,
-                  }));
-            
-                  console.log('Markers to be saved:');
-                  markerData.forEach((marker, index) => {
-                    console.log(`Marker ${index + 1}:`, marker);
-                  });
-            
-                  const closedPolylineCoords = [...polylineCoords, polylineCoords[0]];
-                  setPolylineCoords(closedPolylineCoords);
-            
-                  try {
-                    console.log({ coordinates: markerData });
-                    const response = await fetch("http://10.10.1.101:3000/api/zones", {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({ coordinates: markerData }),
-                    });
-            
-                    if (response.ok) {
-                      const data = await response.json();
-                      setMarkers([]);
-                      setPolylineCoords([]);
-                      setPolygonCoords((prevCoords) => [...prevCoords, markerData]);
-                      console.log("asdancakc" ,polylineCoords);
-                    } else {
-                      console.error('Failed to save data to database');
-                    }
-                  } catch (error) {
-                    console.error('Error saving data to database:', error);
-                  }
+              console.log('Markers to be saved:');
+              markerData.forEach((marker, index) => {
+                console.log(`Marker ${index + 1}:`, marker);
+              });
+
+              const closedPolylineCoords = [...polylineCoords, polylineCoords[0]];
+              setPolylineCoords(closedPolylineCoords);
+
+              try {
+                console.log({ coordinates: markerData });
+                const response = await fetch("http://10.10.1.101:3000/api/zones", {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ coordinates: markerData }),
+                });
+
+                if (response.ok) {
+                  const data = await response.json();
+                  setMarkers([]);
+                  setPolylineCoords([]);
+                  setPolygonCoords((prevCoords) => [...prevCoords, markerData]);
+                  console.log("asdancakc", polylineCoords);
                 } else {
-                  console.log('No markers to save.');
+                  console.error('Failed to save data to database');
                 }
+              } catch (error) {
+                console.error('Error saving data to database:', error);
               }
-          },
-          {defaultIndex : 1}
+            } else {
+              console.log('No markers to save.');
+            }
+          }
+        },
+        { defaultIndex: 1 }
       ]
-  )
-
+    );
   };
-
 
   const onMapPress = (e) => {
     setPolylineCoords([]);
@@ -215,7 +214,6 @@ const GoogleMapsScreen = () => {
         initialRegion={region}
         onPress={onMapPress}
       >
-        {/* Markers */}
         {markers.map((marker) => (
           <Marker
             key={marker.key}
@@ -226,10 +224,8 @@ const GoogleMapsScreen = () => {
           />
         ))}
 
-        {/* Polyline */}
         <Polyline coordinates={polylineCoords} strokeColor="#FF0000" strokeWidth={2} />
 
-        {/* Polygon */}
         {polygonCoords.map((coordinates, index) => (
           <Polygon
             coordinates={coordinates}
@@ -240,14 +236,13 @@ const GoogleMapsScreen = () => {
           />
         ))}
 
-        {/* Current Location Marker */}
         <Marker
           coordinate={{
             latitude: region.latitude,
             longitude: region.longitude,
           }}
           anchor={{ x: 0.5, y: 0.5 }}
-          zIndex={999} // To make sure it's above other markers
+          zIndex={999}
         >
           <Icon name="location-arrow" size={30} color="red" />
         </Marker>
