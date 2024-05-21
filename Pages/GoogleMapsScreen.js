@@ -7,6 +7,7 @@ import fetch from 'node-fetch';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import pointInPolygon from 'point-in-polygon';
+import { Picker } from '@react-native-picker/picker';
 
 const LATITUDE = 31.63416;
 const LONGITUDE = -7.99994;
@@ -27,7 +28,8 @@ const GoogleMapsScreen = () => {
   const [polylineCoords, setPolylineCoords] = useState([]);
   const [polygonCoords, setPolygonCoords] = useState([]);
   const [heading, setHeading] = useState(0);
-
+  const [alertShown, setAlertShown] = useState(false);
+  const [selectedValue , setSelectedValue] = useState("");
   useEffect(() => {
     const fetchZones = async () => {
       try {
@@ -35,6 +37,7 @@ const GoogleMapsScreen = () => {
         if (response.ok) {
           const data = await response.json();
           setPolygonCoords(data);
+          
         } else {
           console.error('Failed to fetch zones from database');
         }
@@ -73,7 +76,7 @@ const GoogleMapsScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (region.latitude && region.longitude) {
+    if (region.latitude && region.longitude && !alertShown) {
       checkIfInsideZone(region.latitude, region.longitude);
     }
   }, [region, polygonCoords]);
@@ -107,6 +110,7 @@ const GoogleMapsScreen = () => {
       const polygonPoints = polygon.map(coord => [coord.longitude, coord.latitude]);
       if (pointInPolygon(point, polygonPoints)) {
         Alert.alert('Zone Alert', 'You are inside a defined zone.');
+        setAlertShown(true)
         break;
       }
     }
@@ -161,10 +165,7 @@ const GoogleMapsScreen = () => {
                 order: index,
               }));
 
-              console.log('Markers to be saved:');
-              markerData.forEach((marker, index) => {
-                console.log(`Marker ${index + 1}:`, marker);
-              });
+              console.log(selectedValue);
 
               const closedPolylineCoords = [...polylineCoords, polylineCoords[0]];
               setPolylineCoords(closedPolylineCoords);
@@ -176,11 +177,12 @@ const GoogleMapsScreen = () => {
                   headers: {
                     'Content-Type': 'application/json',
                   },
-                  body: JSON.stringify({ coordinates: markerData }),
+                  body: JSON.stringify({ coordinates: markerData , typeZone:selectedValue }),
                 });
 
                 if (response.ok) {
                   const data = await response.json();
+                  console.log("SaveDATA " , data);
                   setMarkers([]);
                   setPolylineCoords([]);
                   setPolygonCoords((prevCoords) => [...prevCoords, markerData]);
@@ -235,7 +237,7 @@ const GoogleMapsScreen = () => {
           <Polygon
             coordinates={coordinates}
             key={index}
-            fillColor="rgba(0, 200, 0, 0.5)"
+            fillColor={polygonCoords.typeZone=="danger"?"rgba(255, 0, 0, 0.5)":polygonCoords.typeZone=="safe"? "rgba(144, 238, 144, 0.5)":polygonCoords.typeZone=="normal"&&"rgba(192, 192, 192, 0.5)"}
             strokeColor="rgba(0,0,0,0.5)"
             strokeWidth={2}
           />
@@ -249,9 +251,17 @@ const GoogleMapsScreen = () => {
           anchor={{ x: 0.5, y: 0.5 }}
           zIndex={999}
         >
-          <Icon name="location-arrow" size={30} color="red" />
+          <Icon name="location-arrow" size={30} color="rgba(0, 0, 255, 0.7)" />
         </Marker>
       </MapView>
+      <Picker
+  selectedValue={selectedValue}
+  onValueChange={(itemValue) => {console.log(itemValue); setSelectedValue(itemValue)}}
+>
+  <Picker.Item label="Danger" value="danger" />
+  <Picker.Item label="Safe" value="safe" />
+  <Picker.Item label="Normal" value="normal" />
+</Picker>
 
       <View style={styles.buttonContainer}>
         <Button title="Delete Last Marker" onPress={deleteLastMarker} style={styles.button} />

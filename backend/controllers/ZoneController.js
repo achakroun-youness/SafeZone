@@ -54,7 +54,7 @@ exports.getZoneById = async (req, res) => {
 exports.createZone = async (req, res) => {
     try {
         // Extract coordinates array from the request body
-        const { coordinates } = req.body;
+        const { coordinates , typeZone } = req.body;
 
         // Validate that coordinates is an array
         if (!Array.isArray(coordinates)) {
@@ -86,6 +86,7 @@ exports.createZone = async (req, res) => {
         // Create a new Zone object with the array of Coordonnees object IDs
         const newZone = new Zone({
             coordinates: newCoordinatesArray,
+            typeZone
         });
 
         // Save the new zone to the database
