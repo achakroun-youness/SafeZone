@@ -7,11 +7,7 @@ var ZoneSchema = new Schema({
         type: Schema.Types.ObjectId, // Reference to the Coordonnees model
         ref: 'Coordinates'
     }],
-    typeZone:{
-        type: String,
-        enum: ['danger', 'safe', 'normal'],
-        required: false
-    }
+    
 });
 
 var Zone = mongoose.model("Zone", ZoneSchema, "Zone");

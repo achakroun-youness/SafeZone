@@ -37,7 +37,6 @@ const GoogleMapsScreen = () => {
         if (response.ok) {
           const data = await response.json();
           setPolygonCoords(data);
-          
         } else {
           console.error('Failed to fetch zones from database');
         }
@@ -234,10 +233,11 @@ const GoogleMapsScreen = () => {
         <Polyline coordinates={polylineCoords} strokeColor="#FF0000" strokeWidth={2} />
 
         {polygonCoords.map((coordinates, index) => (
+          
           <Polygon
             coordinates={coordinates}
             key={index}
-            fillColor={polygonCoords.typeZone=="danger"?"rgba(255, 0, 0, 0.5)":polygonCoords.typeZone=="safe"? "rgba(144, 238, 144, 0.5)":polygonCoords.typeZone=="normal"&&"rgba(192, 192, 192, 0.5)"}
+            fillColor={"rgba(255, 0, 0, 0.5)"}
             strokeColor="rgba(0,0,0,0.5)"
             strokeWidth={2}
           />
@@ -254,15 +254,15 @@ const GoogleMapsScreen = () => {
           <Icon name="location-arrow" size={30} color="rgba(0, 0, 255, 0.7)" />
         </Marker>
       </MapView>
-      <Picker
-  selectedValue={selectedValue}
-  onValueChange={(itemValue) => {console.log(itemValue); setSelectedValue(itemValue)}}
->
+     { markers.length !==0 && <Picker
+      selectedValue={selectedValue}
+      onValueChange={(itemValue) => {console.log(itemValue); setSelectedValue(itemValue)}}
+    >
   <Picker.Item label="Danger" value="danger" />
   <Picker.Item label="Safe" value="safe" />
   <Picker.Item label="Normal" value="normal" />
 </Picker>
-
+}
       <View style={styles.buttonContainer}>
         <Button title="Delete Last Marker" onPress={deleteLastMarker} style={styles.button} />
         <Button title="Save" onPress={saveCoordAndZone} style={styles.button} />
