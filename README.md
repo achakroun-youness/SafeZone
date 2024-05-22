@@ -15,11 +15,15 @@ To install SafeZone, follow these steps:
 2. Start the development server:
     ```bash
     npm start 
-    in another terminal 
-        cd ./backend
-        npm start
+    ```
+
+3. Start the development backend server:
+    ```bash
+    cd ./backend
+    npm install
+    npm start 
     ```
 
 ## License
-
+   
 This project is licensed under the [Team Work License](LICENSE).
