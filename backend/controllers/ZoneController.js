@@ -157,12 +157,7 @@ exports.deleteZoneById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Check if the ID is a valid ObjectId
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'Invalid Zone ID' });
-        }
-
-        const zone = await Zone.findByIdAndDelete(id);
+        const zone = await Zone.findByIdAndDelete({_id:id});
         if (!zone) {
             return res.status(404).json({ message: 'Zone not found' });
         }

@@ -11,7 +11,7 @@ const initialState = {
 // Async thunk for login
 export const login = createAsyncThunk('auth/login', async ({ email, password }, { rejectWithValue }) => {
   try {
-    const response = await fetch("http://10.10.3.87:3000/login", {
+    const response = await fetch("http://10.10.1.101:3000/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -19,8 +19,11 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
- 
-});
+  isEtat: {
+    type: Boolean,
+    default: false
+  } 
+},{timestamps:true});
 
 
 // Create the User model from the schema

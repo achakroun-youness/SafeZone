@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import pointInPolygon from 'point-in-polygon';
 import { Picker } from '@react-native-picker/picker';
+import { useSelector } from 'react-redux';
 
 const LATITUDE = 31.63416;
 const LONGITUDE = -7.99994;
@@ -34,30 +35,32 @@ const GoogleMapsScreen = () => {
   };
   
   const [TypeZones,setTypeZones] = useState([])
+  const [ZonesIds,setZonesIds] = useState([])
   const [markers, setMarkers] = useState([]);
   const [polylineCoords, setPolylineCoords] = useState([]);
   const [polygonCoords, setPolygonCoords] = useState([]);
   const [heading, setHeading] = useState(0);
   const [alertShown, setAlertShown] = useState(false);
   const [selectedValue , setSelectedValue] = useState("");
-  useEffect(() => {
-    const fetchZones = async () => {
-      try {
-        const response = await fetch("http://10.10.3.87:3000/api/Allzones");
-        if (response.ok) {
-          const data = await response.json();
-          setPolygonCoords(data);
-        } else {
-          console.error('Failed to fetch zones from database');
-        }
-      } catch (error) {
-        console.error('Error fetching zones:', error);
+  const user = useSelector((state) => state.auth.user);
+  const fetchZones = async () => {
+    try {
+      const response = await fetch("http://10.10.1.101:3000/api/Allzones");
+      if (response.ok) {
+        const data = await response.json();
+        setPolygonCoords(data);
+      } else {
+        console.error('Failed to fetch zones from database');
       }
-    };
+    } catch (error) {
+      console.error('Error fetching zones:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchZones();
+    
     const intervalId = setInterval(fetchZones, 20000);
-
     return () => clearInterval(intervalId);
   }, []);
 
@@ -85,19 +88,31 @@ const GoogleMapsScreen = () => {
   }, []);
 
   const getZonesTypes = async ()=>{
-    const response = await fetch("http://10.10.3.87:3000/api/zones/types");
+    const response = await fetch("http://10.10.1.101:3000/api/zones/types");
         if (response.ok) {
           const data = await response.json();
           console.log("TYpe Zoness : " , data)
           setTypeZones(data);
         } else {
           console.error('Failed to fetch zones from database');
-      }}
+      }
+  }
+  const getZonesIds = async ()=>{
+    const response = await fetch("http://10.10.1.101:3000/api/zones/ids");
+        if (response.ok) {
+          const data = await response.json();
+          setZonesIds(data)
+        } else {
+          console.error('Failed to fetch zones from database');
+      }
+  }
 
   useEffect(()=>{
     getZonesTypes();
+    getZonesIds()
     const intervalId = setInterval(getZonesTypes, 20000);
-    return () => clearInterval(intervalId);
+    const intervalId2 = setInterval(getZonesIds, 20000);
+    return () => clearInterval(intervalId ,intervalId2);
   },[])
 
   useEffect(() => {
@@ -153,7 +168,9 @@ const GoogleMapsScreen = () => {
       const polygonPoints = polygon.map(coord => [coord.longitude, coord.latitude]);
       if (pointInPolygon(point, polygonPoints)) {
         console.log(polygonPoints);
-        Alert.alert('Zone Alert', 'You cannot mark in a saved zone');
+        if(user.isEtat == false){
+          Alert.alert('Zone Alert', 'You are inside a defined zone.');
+        }
         setAlertShown(true);
         return true;
       }
@@ -191,6 +208,40 @@ const GoogleMapsScreen = () => {
     });
   };
 
+  const deleteZone = async (zoneId)=>{
+    if(user.isEtat){
+
+      Alert.alert(
+        "Delete Zone",
+        "Are you sure you want to Save this Zone",
+        [
+          {
+            text: "No", onPress: () => {
+            console.log("Delete No");
+            }
+          },
+          {
+            text:"Yes",onPress:async()=>{
+              const response = await fetch(`http://10.10.1.101:3000/api/zones/${zoneId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+                });
+  
+                if (response.ok) {
+                  const data = await response.json();
+                  console.log("Suppression", data);
+                  fetchZones();
+                } else {
+                  console.error('Failed to save data to database');
+                }
+            }
+          },{ defaultIndex: 1 }
+        ]
+      )
+    }
+  }
   const saveCoordAndZone = async () => {
     Alert.alert(
       "Save Zone",
@@ -204,45 +255,49 @@ const GoogleMapsScreen = () => {
         },
         {
           text: "Yes", onPress: async () => {
-            if (markers.length > 0) {
-              const markerData = markers.map((marker, index) => ({
-                longitude: marker.coordinate.longitude,
-                latitude: marker.coordinate.latitude,
-                order: index,
-              }));
-
-              console.log(selectedValue);
-
-              const closedPolylineCoords = [...polylineCoords, polylineCoords[0]];
-              setPolylineCoords(closedPolylineCoords);
-
-              try {
-                console.log({ coordinates: markerData });
-                const response = await fetch("http://10.10.3.87:3000/api/zones", {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({ coordinates: markerData , typeZone:selectedValue }),
-                });
-
-                if (response.ok) {
-                  const data = await response.json();
-                  console.log("SaveDATA " , data);
-                  getZonesTypes();
-                  setMarkers([]);
-                  setPolylineCoords([]);
-                  setPolygonCoords((prevCoords) => [...prevCoords, markerData]);
-                  console.log("asdancakc", polylineCoords);
-                } else {
-                  console.error('Failed to save data to database');
-                }
-              } catch (error) {
-                console.error('Error saving data to database:', error);
-              }
+            if(selectedValue){
+              if (markers.length > 2) {
+                const markerData = markers.map((marker, index) => ({
+                  longitude: marker.coordinate.longitude,
+                  latitude: marker.coordinate.latitude,
+                  order: index,
+                }));
+  
+                console.log(selectedValue);
+  
+                const closedPolylineCoords = [...polylineCoords, polylineCoords[0]];
+                setPolylineCoords(closedPolylineCoords);
+  
+                try {
+                  console.log({ coordinates: markerData });
+                  const response = await fetch("http://10.10.1.101:3000/api/zones", {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ coordinates: markerData , typeZone:selectedValue }),
+                  });
+  
+                  if (response.ok) {
+                    const data = await response.json();
+                    console.log("SaveDATA " , data);
+                    getZonesTypes();
+                    setMarkers([]);
+                    setPolylineCoords([]);
+                    setPolygonCoords((prevCoords) => [...prevCoords, markerData]);
+                    console.log("asdancakc", polylineCoords);
+                  } else {
+                    console.error('Failed to save data to database');
+                  }} catch (error) {
+                    console.error('Error saving data to database:', error);
+                  }
+           
             } else {
-              console.log('No markers to save.');
+              Alert.alert('No markers to save.');
             }
+          }else{
+            Alert.alert("Choose a Type of zone ")
+          } 
           }
         },
         { defaultIndex: 1 }
@@ -290,6 +345,7 @@ const GoogleMapsScreen = () => {
             fillColor ={zoneColors[TypeZones[index]]|| "rgba(255, 255, 255, 0)"}
             strokeColor="rgba(0,0,0,0.5)"
             strokeWidth={2}
+            onPress={()=> deleteZone(ZonesIds[index])}
           />
         ))}
 
@@ -308,6 +364,7 @@ const GoogleMapsScreen = () => {
       selectedValue={selectedValue}
       onValueChange={(itemValue) => {console.log(itemValue); setSelectedValue(itemValue)}}
     >
+  <Picker.Item label="" value="" />
   <Picker.Item label="Erruption" value="erruption" />
   <Picker.Item label="Flood" value="flood" />
   <Picker.Item label="Fire" value="fire" />
