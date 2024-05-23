@@ -17,6 +17,7 @@ const LONGITUDE_DELTA = 0.1;
 let id = 0;
 
 const GoogleMapsScreen = () => {
+
   const [region, setRegion] = useState({
     latitude: LATITUDE,
     longitude: LONGITUDE,
@@ -24,6 +25,7 @@ const GoogleMapsScreen = () => {
     longitudeDelta: LONGITUDE_DELTA,
   });
 
+  const [TypeZones,setTypeZones] = useState([])
   const [markers, setMarkers] = useState([]);
   const [polylineCoords, setPolylineCoords] = useState([]);
   const [polygonCoords, setPolygonCoords] = useState([]);
@@ -73,6 +75,21 @@ const GoogleMapsScreen = () => {
 
     requestPermissions();
   }, []);
+
+  useEffect(()=>{
+    const getZonesTypes = async ()=>{
+    const response = await fetch("http://10.10.1.101:3000/api/zones/types");
+        if (response.ok) {
+          const data = await response.json();
+          setTypeZones(data);
+        } else {
+          console.error('Failed to fetch zones from database');
+      }}
+    getZonesTypes();
+    const intervalId = setInterval(getZonesTypes, 20000);
+
+    return () => clearInterval(intervalId);
+  },[])
 
   useEffect(() => {
     if (region.latitude && region.longitude && !alertShown) {
@@ -237,7 +254,7 @@ const GoogleMapsScreen = () => {
           <Polygon
             coordinates={coordinates}
             key={index}
-            fillColor={"rgba(255, 0, 0, 0.5)"}
+            fillColor={TypeZones[index] =="danger"?"rgba(255, 0, 0, 0.5)" : "rgba(34, 139, 34, 0.5)"}
             strokeColor="rgba(0,0,0,0.5)"
             strokeWidth={2}
           />
