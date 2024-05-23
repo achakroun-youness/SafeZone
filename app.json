@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "SafeZone",
-    "slug": "SafeZone-Project",
+    "slug": "SafeZone-App",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/union@3x.png",
@@ -17,10 +17,15 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "This app uses your location to show your position on the map."
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to show your position on the map.",
+        "UIStatusBarStyle": "UIStatusBarStyleDarkContent"
       }
     },
     "android": {
+      "androidStatusBar": {
+        "barStyle": "dark-content",
+        "backgroundColor": "#FFFFFF" 
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
