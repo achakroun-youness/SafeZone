@@ -213,7 +213,7 @@ const GoogleMapsScreen = () => {
 
       Alert.alert(
         "Delete Zone",
-        "Are you sure you want to delete this Zone",
+        "Are you sure you want to Save this Zone",
         [
           {
             text: "No", onPress: () => {
