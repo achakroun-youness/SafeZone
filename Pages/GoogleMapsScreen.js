@@ -152,15 +152,12 @@ const GoogleMapsScreen = () => {
     for (const polygon of polygonCoords) {
       const polygonPoints = polygon.map(coord => [coord.longitude, coord.latitude]);
       if (pointInPolygon(point, polygonPoints)) {
-        console.log(polygonPoints);
         Alert.alert('Zone Alert', 'You cannot mark in a saved zone');
-        setAlertShown(true);
-        return true;
+        setAlertShown(true)
+        break;
       }
     }
-    return false;
   };
-  
 
   const onMarkerDragEnd = (e, markerKey) => {
     const newCoordinate = e.nativeEvent.coordinate;
@@ -256,10 +253,9 @@ const GoogleMapsScreen = () => {
       coordinate: e.nativeEvent.coordinate,
       key: id++,
     };
-    if(checkIfMarkerInsideZone(newMarker.coordinate.latitude,newMarker.coordinate.longitude)){deleteLastMarker();}
-    else {
+    checkIfMarkerInsideZone(newMarker.coordinate.latitude,newMarker.coordinate.longitude);
     setMarkers([...markers, newMarker]);
-    setPolylineCoords([...polylineCoords, e.nativeEvent.coordinate]);}
+    setPolylineCoords([...polylineCoords, e.nativeEvent.coordinate]);
   };
 
   return (
@@ -328,7 +324,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-
+    marginBottom: 25,
   },
   button: {
     fontSize: 20,
