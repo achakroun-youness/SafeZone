@@ -35,7 +35,7 @@ const Start = ({navigation}) => {
         loop
         width={width}
         height={width}
-        //autoPlay={true}
+        autoPlay={true}
         data={images.map((image, index) => ({ key: index.toString(), image }))}
         scrollAnimationDuration={1000}
         onSnapToItem={(index) => console.log('current index:', index)}
