@@ -1,9 +1,8 @@
 import * as React from "react";
-import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, Image, TouchableOpacity  } from "react-native";
 import { Color, Border, FontSize, FontFamily} from "../../../GlobalStyles";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../auth/authSlice";
-
 
 const Profile = ({navigation}) => {
   const user = useSelector((state) => state.auth.user);
@@ -12,119 +11,107 @@ const Profile = ({navigation}) => {
     dispatch(logout())
   }
   return (
-    <View style={styles.container}>
-      <View style={styles.container}>
-     
-      <View style={{width: '100%'}}>
-                    <Image 
-                    source={{uri:"https://t3.ftcdn.net/jpg/03/18/46/00/360_F_318460000_Mjn1Z5FSfjoXLrvOQMh5ymyT0lL0hV9t.jpg"}}
-                    style={styles.cover}/>
-                </View>
+    <View style={styles.profile}>
+      <View style={styles.header}>
+        <Text style={styles.profileTitle}>Profile</Text>
+        <View style={styles.search} />
       </View>
-      <View style={styles.profileContainer}>
+      <View style={styles.profilePictureContainer}>
         <Image
-                    source={{uri:"https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-High-Quality-Image.png"}}
-                    style={styles.profile}
-                    />
-        
+          style={styles.profilePicture}
+          source={require("../../../assets/ellipse-8.png")}
+        />
+      </View>
+      <View style={styles.infoContainer}>
         <View style={styles.infoBox}>
-            <Text style={styles.label}>Name</Text>
-            <Text style={styles.infoText}>{user.name}</Text>
-          </View>
+          <Text style={styles.label}>Name</Text>
+          <Text style={styles.infoText}>{user.name}</Text>
+        </View>
         <View style={styles.infoBox}>
-        
           <Text style={styles.label}>Email</Text>
           <Text style={styles.infoText}>{user.email}</Text>
         </View>
       </View>
-        <View style={styles.logoutContainer}>
-                <TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
-                 <Text style={styles.logoutText}>L O G O U T</Text>
-                </TouchableOpacity>
+      <View style={styles.logoutContainer}>
+        <View style={styles.logoutButton}>
+          <TouchableOpacity onPress={handleLogOut}>
+          <Text style={styles.logoutText}>Log Out</Text>
+          </TouchableOpacity>
         </View>
       </View>
-    
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-
-  
-  
+  profile: {
+    flex: 1,
+    paddingTop: 40,
+    backgroundColor: "#fff",
+    paddingHorizontal: 20,
+  },
+  profileTitle: {
+    fontSize: FontSize.size_13xl,
+    color: Color.colorMediumaquamarine,
+    fontFamily: FontFamily.balooThambiMedium,
+    textAlign: 'center'
+  },
+  profilePictureContainer: {
+    alignItems: "center",
+    marginVertical: 40,
+  },
+  profilePicture: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+  },
+  editIcon: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    width: 30,
+    height: 30,
+  },
+  infoContainer: {
+    alignItems: "center",
+  },
   infoBox: {
     width: "100%",
-    backgroundColor: '#f0f0f0',
-    borderRadius: 10,
-    padding: 15,
-    marginVertical: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    backgroundColor: Color.colorGhostwhite_100,
+    borderRadius: Border.br_3xs,
+    padding: 20,
+    marginBottom: 20,
   },
   label: {
-    fontSize: 18,
-    
-    fontFamily: 'BalooThambi2-ExtraBold',
-    marginBottom: -3,
+    fontSize: FontSize.size_xl,
+    color: Color.colorGray_100,
+    fontFamily: FontFamily.balooThambiExtraBold,
+    marginBottom: 5,
   },
   infoText: {
-    fontSize: 16,
-    color: '#555',
-    fontFamily: 'Garamond, serif',
+    fontSize: FontSize.size_lg,
+    color: Color.colorGray_100,
+    fontFamily: FontFamily.balooThambiRegular,
     fontWeight: "300",
     textAlign: "center",
   },
   logoutContainer: {
     alignItems: "center",
-    marginTop: 30,
+    marginTop: 40,
   },
   logoutButton: {
-    width: 140,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#0089B9',
+    width: 120,
+    height: 43,
+    borderRadius: 10,
+    backgroundColor: Color.colorMediumaquamarine,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-    marginTop: -230
   },
   logoutText: {
-    color: '#fff',
-    fontSize: 18,
-    fontFamily: 'BalooThambi2-ExtraBold',
+    color: Color.labelColorLightPrimary,
+    fontSize: FontSize.size_xl,
+    fontFamily: FontFamily.balooThambiExtraBold,
   },
-  container:{
-    flex: 1,
-    backgroundColor : '#ffff'
-},
-cover:{
-  height: 290,
-  width: "100%",
-  resizeMode: "cover"
-},
-profileContainer:{
-  flex: 1,
-  alignItems: "center",
-  marginTop: -90
-
-},
-profile : {
-  height: 155,
-  width :155,
-  borderRadius: 99,
-  borderColor: "#ffff",
-  borderWidth:2,
-  resizeMode: "cover",
-  marginTop: -130
-
-
-},
 });
 
 export default Profile;

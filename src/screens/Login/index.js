@@ -13,7 +13,7 @@ const Login = ({navigation}) => {
     if(email && password){
       dispatch(login({email,password}));
     }else{
-        console.log("Fields are empty..");
+        console.log("FIields are empty..");
     }
   };
 

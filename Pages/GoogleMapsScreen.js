@@ -114,13 +114,6 @@ const GoogleMapsScreen = () => {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
       });
-
-      const locationData = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      };
-      await AsyncStorage.setItem('currentLocation', JSON.stringify(locationData));
-
     } catch (error) {
       console.error('Error fetching current location:', error);
     }
