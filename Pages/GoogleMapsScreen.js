@@ -43,7 +43,7 @@ const GoogleMapsScreen = () => {
   useEffect(() => {
     const fetchZones = async () => {
       try {
-        const response = await fetch("http://10.10.1.101:3000/api/Allzones");
+        const response = await fetch("http://10.10.3.87:3000/api/Allzones");
         if (response.ok) {
           const data = await response.json();
           setPolygonCoords(data);
@@ -85,7 +85,7 @@ const GoogleMapsScreen = () => {
   }, []);
 
   const getZonesTypes = async ()=>{
-    const response = await fetch("http://10.10.1.101:3000/api/zones/types");
+    const response = await fetch("http://10.10.3.87:3000/api/zones/types");
         if (response.ok) {
           const data = await response.json();
           console.log("TYpe Zoness : " , data)
@@ -135,6 +135,17 @@ const GoogleMapsScreen = () => {
       const polygonPoints = polygon.map(coord => [coord.longitude, coord.latitude]);
       if (pointInPolygon(point, polygonPoints)) {
         Alert.alert('Zone Alert', 'You are inside a defined zone.');
+        setAlertShown(true)
+        break;
+      }
+    }
+  };
+  const checkIfMarkerInsideZone = (latitude, longitude) => {
+    const point = [longitude, latitude];
+    for (const polygon of polygonCoords) {
+      const polygonPoints = polygon.map(coord => [coord.longitude, coord.latitude]);
+      if (pointInPolygon(point, polygonPoints)) {
+        Alert.alert('Zone Alert', 'You cannot mark in a saved zone');
         setAlertShown(true)
         break;
       }
@@ -197,7 +208,7 @@ const GoogleMapsScreen = () => {
 
               try {
                 console.log({ coordinates: markerData });
-                const response = await fetch("http://10.10.1.101:3000/api/zones", {
+                const response = await fetch("http://10.10.3.87:3000/api/zones", {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
@@ -235,6 +246,7 @@ const GoogleMapsScreen = () => {
       coordinate: e.nativeEvent.coordinate,
       key: id++,
     };
+    checkIfMarkerInsideZone(newMarker.coordinate.latitude,newMarker.coordinate.longitude);
     setMarkers([...markers, newMarker]);
     setPolylineCoords([...polylineCoords, e.nativeEvent.coordinate]);
   };

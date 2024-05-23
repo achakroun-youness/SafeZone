@@ -17,7 +17,7 @@ const Register = ({ navigation }) => {
   const handleSignup = async() => {
     if (isChecked) {
 
-      const response = await fetch("http://10.10.1.101:3000/api/users", {
+      const response = await fetch("http://10.10.3.87:3000/api/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
