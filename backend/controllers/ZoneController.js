@@ -27,6 +27,19 @@ exports.getAllZones = async (req, res) => {
         res.status(500).send({ message: 'Server error' });
     }
 };
+
+exports.getAllTypeZones = async (req, res) => {
+    try {
+        const zones = await Zone.find().select('typeZone -_id');
+
+        const types = zones.map(zone => zone.typeZone);
+
+        res.status(200).json(types);
+    } catch (error) {
+        console.error('Error fetching typeZone values:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
 // Get a single zone by ID
 
 exports.getZoneById = async (req, res) => {
