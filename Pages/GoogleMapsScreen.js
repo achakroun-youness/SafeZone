@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Button, StyleSheet, Alert } from 'react-native';
 import MapView, { Marker, Polygon, Polyline, mapKit } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { MaterialIcons } from '@expo/vector-icons';
+
 import fetch from 'node-fetch';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
