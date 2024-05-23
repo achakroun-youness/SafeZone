@@ -27,7 +27,7 @@ const GoogleMapsScreen = () => {
   useEffect(() => {
     const fetchZones = async () => {
       try {
-        const response = await fetch("http://192.168.203.204:3000/api/Allzones");
+        const response = await fetch("http://10.10.3.103:3000/api/Allzones");
         if (!response.ok) {
           console.error('Failed to fetch zones from database:', response.status, response.statusText);
           return;
@@ -116,7 +116,7 @@ const GoogleMapsScreen = () => {
             
                   try {
                     console.log({ coordinates: markerData });
-                    const response = await fetch("http://192.168.203.204:3000/api/zones", {
+                    const response = await fetch("http://10.10.3.103:3000/api/zones", {
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json',
