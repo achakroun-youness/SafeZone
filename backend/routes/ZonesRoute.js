@@ -17,6 +17,8 @@ router.get('/Allzones', zoneController.getAllZones);
 
 router.get('/zones/types', zoneController.getAllTypeZones);
 
+router.get('/zones/ids', zoneController.getAllZoneIds);
+
 // Get a single zone by ID
 router.get('/zones/:id', zoneController.getZoneById);
 
@@ -27,6 +29,6 @@ router.post('/zones', zoneController.createZone);
 router.put('/:id', zoneController.updateZone);
 
 // Delete a zone by ID
-router.delete('/:id', zoneController.deleteZone);
+router.delete('/zones/:id', zoneController.deleteZoneById);
 
 module.exports = router;
