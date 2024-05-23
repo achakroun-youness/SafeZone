@@ -45,7 +45,7 @@ const GoogleMapsScreen = () => {
   const user = useSelector((state) => state.auth.user);
   const fetchZones = async () => {
     try {
-      const response = await fetch("http://10.10.1.101:3000/api/Allzones");
+      const response = await fetch("http://10.10.3.87:3000/api/Allzones");
       if (response.ok) {
         const data = await response.json();
         setPolygonCoords(data);
@@ -88,7 +88,7 @@ const GoogleMapsScreen = () => {
   }, []);
 
   const getZonesTypes = async ()=>{
-    const response = await fetch("http://10.10.1.101:3000/api/zones/types");
+    const response = await fetch("http://10.10.3.87:3000/api/zones/types");
         if (response.ok) {
           const data = await response.json();
           console.log("TYpe Zoness : " , data)
@@ -98,7 +98,7 @@ const GoogleMapsScreen = () => {
       }
   }
   const getZonesIds = async ()=>{
-    const response = await fetch("http://10.10.1.101:3000/api/zones/ids");
+    const response = await fetch("http://10.10.3.87:3000/api/zones/ids");
         if (response.ok) {
           const data = await response.json();
           setZonesIds(data)
@@ -222,7 +222,7 @@ const GoogleMapsScreen = () => {
           },
           {
             text:"Yes",onPress:async()=>{
-              const response = await fetch(`http://10.10.1.101:3000/api/zones/${zoneId}`, {
+              const response = await fetch(`http://10.10.3.87:3000/api/zones/${zoneId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -270,7 +270,7 @@ const GoogleMapsScreen = () => {
   
                 try {
                   console.log({ coordinates: markerData });
-                  const response = await fetch("http://10.10.1.101:3000/api/zones", {
+                  const response = await fetch("http://10.10.3.87:3000/api/zones", {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
