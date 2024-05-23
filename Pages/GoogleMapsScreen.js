@@ -33,7 +33,7 @@ const GoogleMapsScreen = () => {
   useEffect(() => {
     const fetchZones = async () => {
       try {
-        const response = await fetch("http://192.168.8.156:3000/api/Allzones");
+        const response = await fetch("http://10.10.3.103:3000/api/Allzones");
         if (response.ok) {
           const data = await response.json();
           setPolygonCoords(data);
@@ -88,6 +88,7 @@ const GoogleMapsScreen = () => {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
       });
+
     } catch (error) {
       console.error('Error fetching current location:', error);
     }
@@ -171,7 +172,7 @@ const GoogleMapsScreen = () => {
 
               try {
                 console.log({ coordinates: markerData });
-                const response = await fetch("http://192.168.8.156:3000/api/zones", {
+                const response = await fetch("http://10.10.3.103:3000/api/zones", {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
