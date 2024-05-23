@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import axios from 'axios'; // Import Axios for HTTP requests
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=a7a5e76f081927c3f4f5febc192e9ce3`;
+const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/weather?`;
 
 const states = [
   { name: 'Danger Zones', icon: 'warning', devices: 4 },
@@ -19,12 +20,23 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchWeather();
+    const intervalId = setInterval(fetchWeather, 20000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const fetchWeather = async () => {
     try {
-      const response = await axios.get(WEATHER_API_URL);
-      setWeather(response.data);
+      const savedLocation = await AsyncStorage.getItem('currentLocation');
+      console.log(savedLocation);
+      if (savedLocation) {
+        const { latitude, longitude } = JSON.parse(savedLocation);
+        const response = await axios.get(`${WEATHER_API_URL}lat=${latitude}&lon=${longitude}&appid=a7a5e76f081927c3f4f5febc192e9ce3`);
+        setWeather(response.data);
+        console.log(response.data);
+      } else {
+        setError('Location data not found. Please enable location services.');
+      }
       setLoading(false);
     } catch (error) {
       console.error('Error fetching weather:', error);
@@ -37,17 +49,13 @@ export default function Dashboard() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Dashboard</Text>
-        <View style={styles.temperatureContainer}>
-          <Text style={styles.temperatureText}>14°C</Text>
-          <Text style={styles.temperatureText}>20°C</Text>
-        </View>
         {loading ? (
           <Text style={styles.weatherText}>Loading weather...</Text>
         ) : error ? (
           <Text style={styles.weatherText}>{error}</Text>
         ) : (
           <Text style={styles.weatherText}>
-            {weather && weather.main && weather.weather && `${weather.main.temp}°C, ${weather.weather[0].description}`}
+            {weather && weather.main && weather.weather && `${weather.main.temp}°C,${weather.name} ,${weather.weather[0].description}`}
           </Text>
         )}
       </View>
@@ -82,16 +90,6 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: 'bold',
-  },
-  temperatureContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginVertical: 10,
-  },
-  temperatureText: {
-    fontSize: 18,
-    fontWeight: '600',
   },
   weatherText: {
     fontSize: 16,

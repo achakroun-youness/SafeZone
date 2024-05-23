@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Button, StyleSheet, Alert } from 'react-native';
 import MapView, { Marker, Polygon, Polyline, mapKit } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { MaterialIcons } from '@expo/vector-icons';
+
 import fetch from 'node-fetch';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -88,6 +88,12 @@ const GoogleMapsScreen = () => {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
       });
+
+      const locationData = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      await AsyncStorage.setItem('currentLocation', JSON.stringify(locationData));
 
     } catch (error) {
       console.error('Error fetching current location:', error);
