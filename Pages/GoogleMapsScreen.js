@@ -24,7 +24,15 @@ const GoogleMapsScreen = () => {
     latitudeDelta: LATITUDE_DELTA,
     longitudeDelta: LONGITUDE_DELTA,
   });
-
+  const zoneColors = {
+    erruption: "rgba(179, 38, 30, 0.5)",
+    flood: "rgba(65, 97, 178, 0.5)",
+    fire: "rgba(246, 119, 52, 0.5)",
+    hazard: "rgba(255, 192, 12, 0.5)",
+    attackers: "rgba(225, 81, 202, 0.5)",
+    tornado: "rgba(125, 127, 130, 0.5)"
+  };
+  
   const [TypeZones,setTypeZones] = useState([])
   const [markers, setMarkers] = useState([]);
   const [polylineCoords, setPolylineCoords] = useState([]);
@@ -76,18 +84,19 @@ const GoogleMapsScreen = () => {
     requestPermissions();
   }, []);
 
-  useEffect(()=>{
-    const getZonesTypes = async ()=>{
+  const getZonesTypes = async ()=>{
     const response = await fetch("http://10.10.1.101:3000/api/zones/types");
         if (response.ok) {
           const data = await response.json();
+          console.log("TYpe Zoness : " , data)
           setTypeZones(data);
         } else {
           console.error('Failed to fetch zones from database');
       }}
+
+  useEffect(()=>{
     getZonesTypes();
     const intervalId = setInterval(getZonesTypes, 20000);
-
     return () => clearInterval(intervalId);
   },[])
 
@@ -199,6 +208,7 @@ const GoogleMapsScreen = () => {
                 if (response.ok) {
                   const data = await response.json();
                   console.log("SaveDATA " , data);
+                  getZonesTypes();
                   setMarkers([]);
                   setPolylineCoords([]);
                   setPolygonCoords((prevCoords) => [...prevCoords, markerData]);
@@ -254,7 +264,7 @@ const GoogleMapsScreen = () => {
           <Polygon
             coordinates={coordinates}
             key={index}
-            fillColor={TypeZones[index] =="danger"?"rgba(255, 0, 0, 0.5)" : "rgba(34, 139, 34, 0.5)"}
+            fillColor ={zoneColors[TypeZones[index]]|| "rgba(255, 255, 255, 0)"}
             strokeColor="rgba(0,0,0,0.5)"
             strokeWidth={2}
           />
@@ -275,9 +285,12 @@ const GoogleMapsScreen = () => {
       selectedValue={selectedValue}
       onValueChange={(itemValue) => {console.log(itemValue); setSelectedValue(itemValue)}}
     >
-  <Picker.Item label="Danger" value="danger" />
-  <Picker.Item label="Safe" value="safe" />
-  <Picker.Item label="Normal" value="normal" />
+  <Picker.Item label="Erruption" value="erruption" />
+  <Picker.Item label="Flood" value="flood" />
+  <Picker.Item label="Fire" value="fire" />
+  <Picker.Item label="Hazard" value="hazard" />
+  <Picker.Item label="Attackers" value="attackers" />
+  <Picker.Item label="Tornado" value="tornado" /> 
 </Picker>
 }
       <View style={styles.buttonContainer}>

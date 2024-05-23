@@ -9,7 +9,7 @@ var ZoneSchema = new Schema({
     }],
     typeZone: {
         type: String,
-        enum: ['danger', 'normal', 'safe']
+        enum: ["erruption" , "flood" ,"fire" , "hazard" , "attackers" ,"tornado" ]
     }
 });
 
