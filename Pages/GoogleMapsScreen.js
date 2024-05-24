@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Button, StyleSheet, Alert } from 'react-native';
+import { View, TouchableOpacity,Text, StyleSheet, Alert } from 'react-native';
 import MapView, { Marker, Polygon, Polyline, mapKit } from 'react-native-maps';
 import * as Location from 'expo-location';
 
@@ -45,7 +45,7 @@ const GoogleMapsScreen = () => {
   const user = useSelector((state) => state.auth.user);
   const fetchZones = async () => {
     try {
-      const response = await fetch("http://10.10.3.87:3000/api/Allzones");
+      const response = await fetch("http://192.168.1.103:3000/api/Allzones");
       if (response.ok) {
         const data = await response.json();
         setPolygonCoords(data);
@@ -88,7 +88,7 @@ const GoogleMapsScreen = () => {
   }, []);
 
   const getZonesTypes = async ()=>{
-    const response = await fetch("http://10.10.3.87:3000/api/zones/types");
+    const response = await fetch("http://192.168.1.103:3000/api/zones/types");
         if (response.ok) {
           const data = await response.json();
           console.log("TYpe Zoness : " , data)
@@ -98,7 +98,7 @@ const GoogleMapsScreen = () => {
       }
   }
   const getZonesIds = async ()=>{
-    const response = await fetch("http://10.10.3.87:3000/api/zones/ids");
+    const response = await fetch("http://192.168.1.103:3000/api/zones/ids");
         if (response.ok) {
           const data = await response.json();
           setZonesIds(data)
@@ -222,7 +222,7 @@ const GoogleMapsScreen = () => {
           },
           {
             text:"Yes",onPress:async()=>{
-              const response = await fetch(`http://10.10.3.87:3000/api/zones/${zoneId}`, {
+              const response = await fetch(`http://192.168.1.103:3000/api/zones/${zoneId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -270,7 +270,7 @@ const GoogleMapsScreen = () => {
   
                 try {
                   console.log({ coordinates: markerData });
-                  const response = await fetch("http://10.10.3.87:3000/api/zones", {
+                  const response = await fetch("http://192.168.1.103:3000/api/zones", {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
@@ -373,10 +373,16 @@ const GoogleMapsScreen = () => {
   <Picker.Item label="Tornado" value="tornado" /> 
 </Picker>
 }
-      <View style={styles.buttonContainer}>
-        <Button title="Delete Last Marker" onPress={deleteLastMarker} style={styles.button} />
-        <Button title="Save" onPress={saveCoordAndZone} style={styles.button} />
-      </View>
+<View style={styles.buttonContainer}>
+  <TouchableOpacity onPress={deleteLastMarker} style={[styles.button, styles.deleteButton]}>
+    <Text style={styles.text}>Delete last marker</Text>
+  </TouchableOpacity>
+  <TouchableOpacity onPress={saveCoordAndZone} style={[styles.button, styles.saveButton]}>
+    <Text style={styles.text}>Save</Text>
+  </TouchableOpacity>
+</View>
+
+
     </View>
   );
 };
@@ -385,15 +391,33 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-
+    marginVertical: 20,
   },
   button: {
-    fontSize: 20,
+    width: 180,
+    height: 60,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  deleteButton: {
+    backgroundColor: "red",
+  },
+  saveButton: {
+    backgroundColor: "green",
   },
   text: {
-    color: '#000',
+    color: '#fff',
     fontWeight: 'bold',
   },
 });
+
+
+
 
 export default GoogleMapsScreen

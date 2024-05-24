@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageBackground }
 import { MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LinearGradient } from 'expo-linear-gradient';
 
 const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/weather?`;
 
@@ -48,11 +47,13 @@ export default function Dashboard() {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.headerText}>
+          Welcome to the Dashboard , 
+        </Text>
       <ImageBackground
         source={require('../../../assets/soleil.jpeg')}
-        style={styles.header}
-        resizeMode="cover">
-        <Text style={styles.headerText}>Dashboard</Text>
+        style={[styles.header]} 
+      >
         {weather && (
           <View style={styles.weatherContainer}>
             <Text style={styles.weatherLocation}>{weather.name}</Text>
@@ -62,6 +63,7 @@ export default function Dashboard() {
           </View>
         )}
       </ImageBackground>
+
       <ScrollView contentContainerStyle={styles.statesContainer}>
         {states.map((state, index) => (
           <TouchableOpacity key={index} style={[styles.stateCard]}>
@@ -81,25 +83,34 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  header: {
-    height: 300, 
     justifyContent: 'center',
     alignItems: 'center',
   },
+  header: {
+    height: 280,
+    width: '98%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    borderRadius: 20, 
+    marginTop: 10,
+  } ,
   headerText: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#fff',
-    marginTop:35,
+    color: 'black',
+    marginTop: 70,
+    marginLeft: 20, 
+    alignSelf: 'flex-start',
+    marginBottom:12, 
+    fontFamily: "BalooThambi2-ExtraBold",
   },
   weatherContainer: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)', 
-    padding: 20,
+    padding: 30,
     borderRadius: 10,
     marginTop: 20,
     alignItems: 'center',
-    
   },
   weatherLocation: {
     fontSize: 24,
@@ -123,6 +134,8 @@ const styles = StyleSheet.create({
   },
   statesContainer: {
     paddingVertical: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   stateCard: {
     padding: 20,
@@ -134,6 +147,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     borderWidth: 1, 
     borderColor: '#ccc',  
+    width: '90%',
   },
   stateInfo: {
     flexDirection: 'row',
@@ -143,6 +157,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginLeft: 10,
+    fontFamily: "BalooThambi2-ExtraBold",
   },
   deviceCount: {
     fontSize: 35,

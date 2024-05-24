@@ -17,7 +17,7 @@ const Start = ({navigation}) => {
   };
 
   const handleSignup = () => {
-    navigation.navigate('Auth', { screen: 'Danger' }); 
+    navigation.navigate('Auth', { screen: 'Register' }); 
 
   };
   return (
@@ -112,8 +112,9 @@ const styles = StyleSheet.create({
     backgroundColor: Color.colorMediumaquamarine,
     paddingVertical: 10,
     borderRadius: Border.br_sm,
-    marginTop: 20,
+    marginTop: 10,
     width: "95%",
+    marginBottom: 40,
   },
   getStarted: {
     fontSize: FontSize.calloutBold_size,
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
   },
   alreadyHaveAn: {
     color: Color.colorDimgray,
-    marginTop: 10,
+    marginTop: 5,
   },
   logIn: {
     color: Color.colorLimegreen,

@@ -7,7 +7,7 @@ import GoogleMapsScreen from '../../../Pages/GoogleMapsScreen';
 const NavigationFrame = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.securcity}>SecurCity</Text>
+      {/* <Text style={styles.securcity}>SecurCity</Text> */}
       <View style={styles.contentWrapper}>
         <GoogleMapsScreen />
       </View>
