@@ -6,14 +6,17 @@ const zoneController = require('../controllers/ZoneController');
 
 
 const validateObjectId = (req, res, next) => {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ message: 'Invalid Zone ID' });
-    }
-    next();
-  };
-  
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ message: 'Invalid Zone ID' });
+  }
+  next();
+};
+
 // Get all zones
 router.get('/Allzones', zoneController.getAllZones);
+
+router.get('/zones/countByType', zoneController.countZonesByType);
+
 
 router.get('/zones/types', zoneController.getAllTypeZones);
 

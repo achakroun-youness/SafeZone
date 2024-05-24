@@ -13,7 +13,7 @@ exports.getAllZones = async (req, res) => {
             }).exec();
 
             return (
-               coordinatesDetails.map(coord => ({
+                coordinatesDetails.map(coord => ({
                     longitude: coord.longitude,
                     latitude: coord.latitude,
                     order: coord.order
@@ -24,9 +24,28 @@ exports.getAllZones = async (req, res) => {
         res.status(200).json(zonesWithCoordinates);
     } catch (error) {
         console.error(error);
-        res.status(500).send({ message: 'Server error' });
-    }
+        res.status(500).send({ message: 'Server error' });
+    }
 };
+// Count zones by type
+exports.countZonesByType = async (req, res) => {
+    try {
+        const zonesCount = await Zone.aggregate([
+            { $group: { _id: "$typeZone", count: { $sum: 1 } } }
+        ]);
+
+        const counts = zonesCount.map(zone => ({
+            type: zone._id,
+            count: zone.count
+        }));
+
+        res.status(200).json(counts);
+    } catch (error) {
+        console.error('Error counting zones by type:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 
 exports.getAllTypeZones = async (req, res) => {
     try {
@@ -61,30 +80,30 @@ exports.getAllZoneIds = async (req, res) => {
 
 exports.getZoneById = async (req, res) => {
     try {
-      const { id } = req.params;
-      
-      // Check if the ID is a valid ObjectId
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ message: 'Invalid Zone ID' });
-      }
-  
-      const zone = await Zone.findById(id);
-      if (!zone) {
-        return res.status(404).json({ message: 'Zone not found' });
-      }
-  
-      res.status(200).json(zone);
+        const { id } = req.params;
+
+        // Check if the ID is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid Zone ID' });
+        }
+
+        const zone = await Zone.findById(id);
+        if (!zone) {
+            return res.status(404).json({ message: 'Zone not found' });
+        }
+
+        res.status(200).json(zone);
     } catch (error) {
-      console.error('Error fetching zone:', error);
-      res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('Error fetching zone:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
-  };
+};
 
 // Define controller function for creating a new zone with coordinates
 exports.createZone = async (req, res) => {
     try {
         // Extract coordinates array from the request body
-        const { coordinates , typeZone } = req.body;
+        const { coordinates, typeZone } = req.body;
 
         // Validate that coordinates is an array
         if (!Array.isArray(coordinates)) {
@@ -157,7 +176,7 @@ exports.deleteZoneById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const zone = await Zone.findByIdAndDelete({_id:id});
+        const zone = await Zone.findByIdAndDelete({ _id: id });
         if (!zone) {
             return res.status(404).json({ message: 'Zone not found' });
         }
