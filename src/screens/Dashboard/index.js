@@ -6,23 +6,28 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/weather?`;
 
-const states = [
-  { name: 'Erruption', icon: 'whatshot', devices: 4, color: "#b3261e" },
-  { name: 'Flood', icon: 'water', devices: 6, color: '#4161b2' },
-  { name: 'Tornado', icon: 'tornado', devices: 4, color: '#7d7f82' },
-  { name: 'Fire', icon: 'local-fire-department', devices: 6, color: '#f67734' },
-  { name: 'Hazard', icon: 'warning', devices: 6, color: '#ffc00c' },
-  { name: 'Attackers', icon: 'security', devices: 4, color: '#e151ca' },
+const initialState = [
+  { name: 'Erruption', icon: 'whatshot', count: 0, color: "#b3261e" },
+  { name: 'Flood', icon: 'water', count: 0, color: '#4161b2' },
+  { name: 'Tornado', icon: 'tornado', count: 0, color: '#7d7f82' },
+  { name: 'Fire', icon: 'local-fire-department', count: 0, color: '#f67734' },
+  { name: 'Hazard', icon: 'warning', count: 0, color: '#ffc00c' },
+  { name: 'Attackers', icon: 'security', count: 0, color: '#e151ca' },
 ];
 
 export default function Dashboard() {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [states, setStates] = useState(initialState);
 
   useEffect(() => {
     fetchWeather();
-    const intervalId = setInterval(fetchWeather, 20000);
+    fetchTypeCounts();
+    const intervalId = setInterval(() => {
+      fetchWeather();
+      fetchTypeCounts();
+    }, 20000);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -42,6 +47,26 @@ export default function Dashboard() {
       console.error('Error fetching weather:', error);
       setError('Error fetching weather data. Please try again later.');
       setLoading(false);
+    }
+  };
+
+  const fetchTypeCounts = async () => {
+    try {
+      const response = await axios.get('http://172.20.10.14:3000/zones/countByType');
+      const typeCounts = response.data;
+
+      const updatedStates = initialState.map(state => {
+        const type = typeCounts.find(dc => dc.type === state.name);
+        return {
+          ...state,
+          count: type ? type.count : 0
+        };
+      });
+
+      setStates(updatedStates);
+    } catch (error) {
+      console.error('Error fetching types counts:', error);
+      setError('Error fetching types counts. Please try again later.');
     }
   };
 
@@ -71,7 +96,7 @@ export default function Dashboard() {
               <MaterialIcons name={state.icon} size={40} style={[ { color: state.color }]}/>
               <Text style={styles.stateName}>{state.name}</Text>
             </View>
-            <Text style={[styles.deviceCount, { color: state.color }]}>{state.devices}</Text>
+            <Text style={[styles.typeCount, { color: state.color }]}>{state.count}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -94,7 +119,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 20, 
     marginTop: 10,
-  } ,
+  },
   headerText: {
     fontSize: 22,
     fontWeight: 'bold',
