@@ -43,7 +43,7 @@ const GoogleMapsScreen = () => {
   useEffect(() => {
     const fetchZones = async () => {
       try {
-        const response = await fetch("http://10.10.3.87:3000/api/Allzones");
+        const response = await fetch("http://192.168.0.169:3000/api/Allzones");
         if (response.ok) {
           const data = await response.json();
           setPolygonCoords(data);
@@ -85,7 +85,7 @@ const GoogleMapsScreen = () => {
   }, []);
 
   const getZonesTypes = async ()=>{
-    const response = await fetch("http://10.10.3.87:3000/api/zones/types");
+    const response = await fetch("http://192.168.0.169:3000/api/zones/types");
         if (response.ok) {
           const data = await response.json();
           console.log("TYpe Zoness : " , data)
@@ -218,7 +218,7 @@ const GoogleMapsScreen = () => {
 
               try {
                 console.log({ coordinates: markerData });
-                const response = await fetch("http://10.10.3.87:3000/api/zones", {
+                const response = await fetch("http://192.168.0.169:3000/api/zones", {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
